@@ -2,14 +2,17 @@ package com.example.alltogether.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 @Entity
 @Table(name = "user_profile")
-public class UserProfile {
+public class UserProfile implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +48,9 @@ public class UserProfile {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> roles = new HashSet<>();
+
 
     // Constructeurs
     public UserProfile() {}
@@ -78,4 +84,53 @@ public class UserProfile {
     public void setCountryOrigin(String countryOrigin) { this.countryOrigin = countryOrigin; }
     public String getProfilePictureUrl() { return profilePictureUrl; }
     public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .toList();
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Utilise l'email comme nom d'utilisateur
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Compte non expiré
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Compte non bloqué
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Identifiants non expirés
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // Compte activé
+    }
+
+    // Ajoute des méthodes pour gérer les rôles
+    public void addRole(String role) {
+        roles.add(role);
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+
+
+
 }

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:15
+    container_name: alltogether-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: BaseD@ta2025
+      POSTGRES_DB: Alltogether
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
