@@ -1,18 +1,24 @@
 package com.example.alltogether.controller;
 
-import com.example.alltogether.model.UserProfile;
-import com.example.alltogether.model.dto.LoginRequest;
+import com.example.alltogether.dto.UserCreateDTO;
+import jakarta.validation.Valid;
+import com.example.alltogether.dto.LoginRequest;
 import com.example.alltogether.service.AuthService;
 import com.example.alltogether.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contrôleur REST qui gère l’authentification des utilisateurs :
@@ -34,25 +40,38 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
-
+    @Valid
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserProfile userProfile) {
-        return ResponseEntity.ok(authService.register(userProfile));
+    public ResponseEntity<String> register(@RequestBody UserCreateDTO userCreateDTO) {
+        return ResponseEntity.ok(authService.register(userCreateDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-        );
-       // Si l’authentification réussit, Spring retourne un objet Authentication
-        // contenant l’utilisateur authentifié (implémentation de UserDetails)
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
 
-        // On génère un token JWT pour cet utilisateur
-        String token = jwtTokenProvider.generateToken(userDetails);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String token = jwtTokenProvider.generateToken(userDetails);
 
-        // On renvoie le token dans la réponse HTTP
-        return ResponseEntity.ok(token);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            return ResponseEntity.ok(response);
+
+        } catch (BadCredentialsException e) {
+            // Email ou mot de passe incorrect
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Email ou mot de passe incorrect");
+            return ResponseEntity.status(401).body(errorResponse);
+
+        } catch (UsernameNotFoundException e) {
+            // Utilisateur non trouvé
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Utilisateur non trouvé");
+            return ResponseEntity.status(401).body(errorResponse);
+        }
     }
+
 }

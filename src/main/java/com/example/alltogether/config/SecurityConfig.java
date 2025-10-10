@@ -4,6 +4,7 @@ import com.example.alltogether.security.JwtAuthenticationFilter;
 import com.example.alltogether.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,13 +48,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()  // Autorise explicitement l'inscription et la connexion
-                        .requestMatchers("/api/cities/**").permitAll()  // Autorise l'accès aux villes
-                        .requestMatchers("/api/places/**").hasAnyRole("USER", "ADMIN")  // Restreint l'accès aux lieux
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")  // Restreint l'accès aux utilisateurs
-                        .anyRequest().authenticated()  // Toutes les autres requêtes nécessitent une authentification
+                        // Endpoints publics
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/cities/**").permitAll()
+
+                        // Endpoints USER (lecture seule des lieux)
+                        .requestMatchers(HttpMethod.GET, "/api/places/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/participations/**").hasAnyRole("USER", "ADMIN")
+
+                        // Endpoints ADMIN seulement (écriture + gestion users)
+                        .requestMatchers(HttpMethod.POST, "/api/places/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/places/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/places/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+
+                        // Toutes les autres requêtes nécessitent une authentification
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

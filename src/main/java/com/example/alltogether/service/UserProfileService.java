@@ -1,17 +1,22 @@
 package com.example.alltogether.service;
 
-
+import com.example.alltogether.dto.*;
+import com.example.alltogether.exception.EmailAlreadyExistsException;
 import com.example.alltogether.model.UserProfile;
 import com.example.alltogether.repository.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserProfileService {
+
     private final UserProfileRepository userProfileRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -21,36 +26,140 @@ public class UserProfileService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public List<UserProfile> getAllUsers() {
-        return userProfileRepository.findAll();
+    // ========================
+    // LISTE DES UTILISATEURS
+    // ========================
+    public List<UserResponseDTO> getAllUsers() {
+        return userProfileRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<UserProfile> getUserById(Long id) {
-        return userProfileRepository.findById(id);
+    public Optional<UserProfileDTO> getUserById(Long id) {
+        return userProfileRepository.findById(id)
+                .map(this::toProfileDTO);
     }
 
-    public Optional<UserProfile> getUserByEmail(String email) {
-        return userProfileRepository.findByEmail(email);
+    public Optional<UserProfileDTO> getUserByEmail(String email) {
+        return userProfileRepository.findByEmail(email)
+                .map(this::toProfileDTO);
     }
 
-    public UserProfile createUser(UserProfile userProfile) {
-        userProfile.setPassword(passwordEncoder.encode(userProfile.getPassword()));
-        return userProfileRepository.save(userProfile);
+    // ========================
+    // CRÉATION D’UN UTILISATEUR
+    // ========================
+    public UserProfileDTO createUser(UserCreateDTO userCreateDTO) {
+        if (userProfileRepository.existsByEmail(userCreateDTO.getEmail())) {
+            throw new EmailAlreadyExistsException("L'adresse email " + userCreateDTO.getEmail() + " est déjà utilisée");
+        }
+        UserProfile user = new UserProfile();
+        user.setFirstName(userCreateDTO.getFirstName());
+        user.setLastName(userCreateDTO.getLastName());
+        user.setEmail(userCreateDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
+        user.setAge(userCreateDTO.getAge());
+        user.setCurrentCity(userCreateDTO.getCurrentCity());
+        user.setCountryOrigin(userCreateDTO.getCountryOrigin());
+        user.setRoles("USER");
+
+        UserProfile savedUser = userProfileRepository.save(user);
+        return toProfileDTO(savedUser);
     }
 
-    public UserProfile updateUser(Long id, UserProfile userProfileDetails) {
-        UserProfile userProfile = userProfileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        userProfile.setFirstName(userProfileDetails.getFirstName());
-        userProfile.setLastName(userProfileDetails.getLastName());
-        userProfile.setEmail(userProfileDetails.getEmail());
-        userProfile.setAge(userProfileDetails.getAge());
-        userProfile.setCurrentCity(userProfileDetails.getCurrentCity());
-        userProfile.setCountryOrigin(userProfileDetails.getCountryOrigin());
-        return userProfileRepository.save(userProfile);
+
+    // ========================
+    // MISE À JOUR D’UN UTILISATEUR
+    // ========================
+    public Optional<UserProfileDTO> updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        return userProfileRepository.findById(id)
+                .map(user -> {
+                    // Vérifier si l'email est modifié et déjà utilisé par un autre utilisateur
+                    if (!user.getEmail().equals(userUpdateDTO.getEmail()) &&
+                            userProfileRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(), id)) {
+                        throw new EmailAlreadyExistsException(
+                                "L'email " + userUpdateDTO.getEmail() + " est déjà utilisé par un autre utilisateur"
+                        );
+                    }
+
+                    // Mise à jour des champs
+                    user.setFirstName(userUpdateDTO.getFirstName());
+                    user.setLastName(userUpdateDTO.getLastName());
+                    user.setEmail(userUpdateDTO.getEmail());
+                    user.setAge(userUpdateDTO.getAge());
+                    user.setCurrentCity(userUpdateDTO.getCurrentCity());
+                    user.setCountryOrigin(userUpdateDTO.getCountryOrigin());
+                    if (userUpdateDTO.getProfilePictureUrl() != null) {
+                        user.setProfilePictureUrl(userUpdateDTO.getProfilePictureUrl());
+                    }
+
+                    // Sauvegarde et conversion en DTO
+                    UserProfile updatedUser = userProfileRepository.save(user);
+                    return toProfileDTO(updatedUser);
+                });
     }
 
+
+
+    // ========================
+    // SUPPRESSION
+    // ========================
     public void deleteUser(Long id) {
         userProfileRepository.deleteById(id);
+    }
+
+    // ========================
+    // MISE À JOUR DU MOT DE PASSE
+    // ========================
+    public void updatePassword(Long id, UpdatePasswordDTO dto) {
+        UserProfile user = userProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // SI ADMIN → pas besoin de vérifier l'ancien mot de passe
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            // Pour les users normaux, vérifier l'ancien mot de passe
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+                throw new SecurityException("Mot de passe actuel incorrect");
+            }
+        }
+
+        // Vérifier que le nouveau mot de passe est différent
+        if (passwordEncoder.matches(dto.getNewPassword(), user.getPassword())) {
+            throw new RuntimeException("Le nouveau mot de passe doit être différent de l'actuel");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userProfileRepository.save(user);
+    }
+
+    // ========================
+    // CONVERSIONS VERS DTO
+    // ========================
+    private UserResponseDTO toResponseDTO(UserProfile user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getAge(),
+                user.getCurrentCity()
+        );
+    }
+
+    private UserProfileDTO toProfileDTO(UserProfile user) {
+        return new UserProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getAge(),
+                user.getCurrentCity(),
+                user.getCountryOrigin(),
+                user.getProfilePictureUrl(),
+                user.getRoles()
+        );
     }
 }

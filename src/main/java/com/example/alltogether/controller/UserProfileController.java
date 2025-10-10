@@ -1,17 +1,18 @@
 package com.example.alltogether.controller;
 
-import com.example.alltogether.model.UserProfile;
+import com.example.alltogether.dto.*;
 import com.example.alltogether.service.UserProfileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserProfileController {
+
     private final UserProfileService userProfileService;
 
     @Autowired
@@ -19,36 +20,53 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 
+    // GET /api/users -> liste “light” avec UserResponseDTO
     @GetMapping
-    public List<UserProfile> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userProfileService.getAllUsers();
     }
 
+    // GET /api/users/{id} -> profil complet avec UserProfileDTO
     @GetMapping("/{id}")
-    public ResponseEntity<UserProfile> getUserById(@PathVariable Long id) {
-        Optional<UserProfile> user = userProfileService.getUserById(id);
-        return user.map(ResponseEntity::ok)
+    public ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id) {
+        return userProfileService.getUserById(id)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // POST /api/users -> création d’un utilisateur avec UserCreateDTO
+    @Valid
     @PostMapping
-    public UserProfile createUser(@RequestBody UserProfile userProfile) {
-        return userProfileService.createUser(userProfile);
+    public UserProfileDTO createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        return userProfileService.createUser(userCreateDTO);
     }
 
+    // PUT /api/users/{id} -> mise à jour d’un utilisateur
+    @Valid
     @PutMapping("/{id}")
-    public ResponseEntity<UserProfile> updateUser(@PathVariable Long id, @RequestBody UserProfile userProfileDetails) {
-        try {
-            UserProfile updatedUser = userProfileService.updateUser(id, userProfileDetails);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UserProfileDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+        return userProfileService.updateUser(id, userUpdateDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // DELETE /api/users/{id} -> suppression
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userProfileService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    // PUT /api/users/{id}/password -> mise à jour du mot de passe
+    @Valid
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody UpdatePasswordDTO dto) {
+        try {
+            userProfileService.updatePassword(id, dto);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

@@ -30,42 +30,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
-        // On récupère l'en-tête Authorization
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        // Si pas de header ou pas de "Bearer", on passe au filtre suivant sans rien faire
+        final String authHeader = request.getHeader("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // On extrait le token (après "Bearer ")
-        jwt = authHeader.substring(7);
-        userEmail = jwtTokenProvider.extractUsername(jwt);
+        try {
+            final String jwt = authHeader.substring(7);
+            final String userEmail = jwtTokenProvider.extractUsername(jwt);
 
-        // Si on a bien un email et que l’utilisateur n’est pas déjà authentifié
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtTokenProvider.isTokenValid(jwt, userDetails)) {
-                // On crée un objet d’authentification Spring Security
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                // On ajoute des détails (ex: adresse IP, session, etc.)
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // On enregistre l’utilisateur comme authentifié
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                if (jwtTokenProvider.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities() // ✅ Les rôles sont bien inclus ici
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // Log l'erreur mais ne bloque pas la requête
+            logger.error("Cannot set user authentication: {}", e);
         }
+
         filterChain.doFilter(request, response);
     }
 }

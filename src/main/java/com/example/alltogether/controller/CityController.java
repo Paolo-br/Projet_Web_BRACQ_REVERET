@@ -1,17 +1,18 @@
 package com.example.alltogether.controller;
 
-import com.example.alltogether.model.City;
+import com.example.alltogether.dto.CityDTO;
 import com.example.alltogether.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/cities")
 public class CityController {
+
     private final CityService cityService;
 
     @Autowired
@@ -19,38 +20,41 @@ public class CityController {
         this.cityService = cityService;
     }
 
+    // GET /api/cities
     @GetMapping
-    public List<City> getAllCities() {
+    public List<CityDTO> getAllCities() {
         return cityService.getAllCities();
     }
 
+    // GET /api/cities/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<City> getCityById(@PathVariable Long id) {
-        Optional<City> city = cityService.getCityById(id);
-        return city.map(ResponseEntity::ok)
+    public ResponseEntity<CityDTO> getCityById(@PathVariable Long id) {
+        return cityService.getCityById(id)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // GET /api/cities/search?name=...
     @GetMapping("/search")
-    public List<City> searchCitiesByName(@RequestParam String name) {
+    public List<CityDTO> searchCitiesByName(@RequestParam String name) {
         return cityService.searchCitiesByName(name);
     }
 
+    // POST /api/cities
     @PostMapping
-    public City createCity(@RequestBody City city) {
-        return cityService.createCity(city);
+    public CityDTO createCity(@RequestBody CityDTO cityDTO) {
+        return cityService.createCity(cityDTO);
     }
 
+    // PUT /api/cities/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<City> updateCity(@PathVariable Long id, @RequestBody City cityDetails) {
-        try {
-            City updatedCity = cityService.updateCity(id, cityDetails);
-            return ResponseEntity.ok(updatedCity);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CityDTO> updateCity(@PathVariable Long id, @RequestBody CityDTO cityDTO) {
+        return cityService.updateCity(id, cityDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // DELETE /api/cities/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
         cityService.deleteCity(id);

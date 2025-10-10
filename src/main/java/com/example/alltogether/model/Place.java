@@ -2,6 +2,8 @@ package com.example.alltogether.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity
@@ -11,12 +13,13 @@ public class Place {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
-    private String category; // Ex: "bar", "musée", "parc"
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     @NotBlank
     @Column(nullable = false)
@@ -33,10 +36,10 @@ public class Place {
     private List<String> photos; // Liste d'URLs pointant vers les photos
 
     @Column(nullable = false)
-    private float latitude;
+    private Float latitude;
 
     @Column(nullable = false)
-    private float longitude;
+    private Float longitude;
 
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
@@ -45,8 +48,8 @@ public class Place {
     // Constructeurs
     public Place() {}
 
-    public Place(String name, String category, String address, String description,
-                 String openingHours, List<String> photos, float latitude, float longitude, City city) {
+    public Place(String name, Category category, String address, String description,
+                 String openingHours, List<String> photos, Float latitude, Float longitude, City city) {
         this.name = name;
         this.category = category;
         this.address = address;
@@ -63,8 +66,13 @@ public class Place {
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
     public String getDescription() { return description; }
@@ -73,10 +81,10 @@ public class Place {
     public void setOpeningHours(String openingHours) { this.openingHours = openingHours; }
     public List<String> getPhotos() { return photos; }
     public void setPhotos(List<String> photos) { this.photos = photos; }
-    public float getLatitude() { return latitude; }
-    public void setLatitude(float latitude) { this.latitude = latitude; }
-    public float getLongitude() { return longitude; }
-    public void setLongitude(float longitude) { this.longitude = longitude; }
+    public Float getLatitude() { return latitude; }
+    public void setLatitude(Float latitude) { this.latitude = latitude; }
+    public Float getLongitude() { return longitude; }
+    public void setLongitude(Float longitude) { this.longitude = longitude; }
     public City getCity() { return city; }
     public void setCity(City city) { this.city = city; }
 }

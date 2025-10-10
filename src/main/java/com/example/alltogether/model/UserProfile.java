@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user_profile")
@@ -32,7 +31,7 @@ public class UserProfile implements UserDetails {
 
     @NotBlank
     @Column(nullable = false)
-    private String password; // Stockage du hash du mot de passe
+    private String password;
 
     @Min(18)
     @Max(100)
@@ -40,10 +39,10 @@ public class UserProfile implements UserDetails {
 
     @NotBlank
     @Column(name = "current_city", nullable = false)
-    private String currentCity; // Ville actuelle sous forme de String
+    private String currentCity;
 
     private String countryOrigin;
-    private String profilePictureUrl; // Pour la priorité 2
+    private String profilePictureUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
@@ -51,8 +50,7 @@ public class UserProfile implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles = new HashSet<>();
 
-
-    // Constructeurs
+    // CORRECTION : Constructeur sans encodage automatique du mot de passe
     public UserProfile() {}
 
     public UserProfile(String firstName, String lastName, String email, String password,
@@ -60,11 +58,12 @@ public class UserProfile implements UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
+        this.password = password; // L'encodage sera fait dans le service
         this.age = age;
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
     }
+
     // Getters et setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -84,40 +83,52 @@ public class UserProfile implements UserDetails {
     public void setCountryOrigin(String countryOrigin) { this.countryOrigin = countryOrigin; }
     public String getProfilePictureUrl() { return profilePictureUrl; }
     public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
+    public List<Participation> getParticipations() { return participations; }
+    public void setParticipations(List<Participation> participations) { this.participations = participations; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .toList();
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Ajouter "ROLE_" prefix
+                .collect(Collectors.toList());
+    }
+
+    // Méthode utilitaire pour vérifier les rôles
+    public boolean hasRole(String role) {
+        return roles.contains(role);
     }
 
     @Override
     public String getUsername() {
-        return email; // Utilise l'email comme nom d'utilisateur
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Compte non expiré
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Compte non bloqué
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Identifiants non expirés
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Compte activé
+        return true;
     }
 
-    // Ajoute des méthodes pour gérer les rôles
+
+    public void setRoles(String role) {
+        this.roles.clear();
+        this.roles.add(role);
+    }
+
     public void addRole(String role) {
         roles.add(role);
     }
@@ -130,7 +141,19 @@ public class UserProfile implements UserDetails {
         this.roles = roles;
     }
 
+    // Méthode pour vérifier si l'utilisateur est admin
+    public boolean isAdmin() {
+        return roles.contains("ADMIN");
+    }
 
+    // Méthode pour promouvoir un utilisateur admin
+    public void promoteToAdmin() {
+        roles.add("ADMIN");
+    }
 
-
+    // Méthode pour retirer les droits admin
+    public void demoteToUser() {
+        roles.remove("ADMIN");
+        roles.add("USER");
+    }
 }
