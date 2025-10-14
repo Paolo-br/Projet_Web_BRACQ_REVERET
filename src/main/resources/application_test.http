@@ -472,18 +472,41 @@ Content-Type: application/json
 ### 9. TESTS DES FONCTIONNALITÉS SPÉCIFIQUES
 ### =============================================
 
-### 9.1 Lieux par catégorie (TEST AVEC LOGGING)
-GET {{baseUrl}}/api/places/category/BAR
+### 9.1 Lieux par catégorie (NOUVELLE STRUCTURE)
+GET {{baseUrl}}/api/places?category=BAR
 Authorization: Bearer {{userToken}}
 
 > {%
     client.test("Lieux par catégorie BAR", function() {
         if (response.status === 200) {
-            client.log("✅ SUCCÈS: Lieux par catégorie BAR fonctionne");
-            client.log("📊 Nombre de lieux: " + response.body.length);
+            client.log("✅ SUCCÈS: Recherche par catégorie fonctionne");
+            client.log("📊 Nombre de lieux BAR: " + response.body.length);
         } else {
             client.log("❌ ÉCHEC: " + response.status);
-            client.log("Erreur: " + JSON.stringify(response.body));
+        }
+    });
+%}
+
+### Test recherche par ville
+GET {{baseUrl}}/api/places?city=Paris
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("Lieux par ville Paris", function() {
+        if (response.status === 200) {
+            client.log("✅ SUCCÈS: Recherche par ville fonctionne");
+        }
+    });
+%}
+
+### Test recherche combinée
+GET {{baseUrl}}/api/places?category=BAR&city=Paris
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("Lieux BAR à Paris", function() {
+        if (response.status === 200) {
+            client.log("✅ SUCCÈS: Recherche combinée fonctionne");
         }
     });
 %}

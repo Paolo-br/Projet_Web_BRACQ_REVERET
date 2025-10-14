@@ -25,6 +25,9 @@ public class City {
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Place> places = new ArrayList<>();
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     // Constructeurs
     public City() {}
 
@@ -54,4 +57,11 @@ public class City {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public List<Place> getPlaces() { return places; }
+    public void setPlaces(List<Place> places) { this.places = places; }
 }

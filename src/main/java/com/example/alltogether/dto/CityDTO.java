@@ -5,14 +5,16 @@ public class CityDTO {
     private String name;
     private float latitude;
     private float longitude;
+    private String imageUrl;
 
     public CityDTO() {}
 
-    public CityDTO(Long id, String name, float latitude, float longitude) {
+    public CityDTO(Long id, String name, float latitude, float longitude, String imageUrl) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() { return id; }
@@ -26,4 +28,6 @@ public class CityDTO {
 
     public float getLongitude() { return longitude; }
     public void setLongitude(float longitude) { this.longitude = longitude; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

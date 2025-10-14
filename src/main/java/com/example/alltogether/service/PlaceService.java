@@ -180,6 +180,22 @@ public class PlaceService {
         return place;
     }
 
+    public List<PlaceDTO> searchPlaces(Category category, String cityName) {
+        List<Place> places;
+
+        if (category != null && cityName != null) {
+            places = placeRepository.findByCategoryAndCity_Name(category, cityName);
+        } else if (category != null) {
+            places = placeRepository.findByCategory(category);
+        } else if (cityName != null) {
+            places = placeRepository.findByCityName(cityName);
+        } else {
+            places = placeRepository.findAll();
+        }
+
+        return places.stream().map(this::toDTO).toList();
+    }
+
     // Conversion Entity → DTO
     public PlaceDTO toDTO(Place place) {
         return new PlaceDTO(
@@ -196,4 +212,12 @@ public class PlaceService {
                 place.getCity() != null ? place.getCity().getName() : null
         );
     }
+
+    public void addPhotosToPlace(Long placeId, List<String> photoUrls) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new RuntimeException("Lieu non trouvé"));
+        place.getPhotos().addAll(photoUrls);
+        placeRepository.save(place);
+    }
+
 }

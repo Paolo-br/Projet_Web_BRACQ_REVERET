@@ -2,6 +2,7 @@ package com.example.alltogether.controller;
 
 import com.example.alltogether.dto.PlaceCreateDTO;
 import com.example.alltogether.dto.PlaceDTO;
+import com.example.alltogether.model.Category;
 import com.example.alltogether.service.PlaceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 
 @RestController
@@ -23,11 +25,6 @@ public class PlaceController {
         this.placeService = placeService;
     }
 
-    // GET /api/places
-    @GetMapping
-    public List<PlaceDTO> getAllPlaces() {
-        return placeService.getAllPlaces();
-    }
 
     // GET /api/places/{id}
     @GetMapping("/{id}")
@@ -85,5 +82,24 @@ public class PlaceController {
     public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
         placeService.deletePlace(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PlaceDTO>> getPlaces(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String city) {
+
+        if (category != null || city != null) {
+            // Mode recherche
+            List<PlaceDTO> results = placeService.searchPlaces(
+                    category != null ? Category.fromString(category) : null,
+                    city
+            );
+            return ResponseEntity.ok(results);
+        } else {
+            // Mode liste complète
+            List<PlaceDTO> allPlaces = placeService.getAllPlaces();
+            return ResponseEntity.ok(allPlaces);
+        }
     }
 }

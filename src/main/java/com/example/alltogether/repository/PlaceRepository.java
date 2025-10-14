@@ -15,10 +15,12 @@ import java.util.Optional;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    // CORRECTION : Utiliser l'Enum directement, pas String
-    List<Place> findByCategory(Category category);  // ← Category, pas String
+    List<Place> findByCategory(Category category);
 
     List<Place> findByCityId(Long cityId);
+
+    List<Place> findByCategoryAndCity_Name(Category category, String cityName);
+
     boolean existsByName(String name);
 
     // Pour les participations
@@ -27,4 +29,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     @Query("SELECT p FROM Participation p WHERE p.user.id = :userId AND p.place.id = :placeId AND p.participationDate = :date")
     Optional<Participation> findByUserIdAndPlaceIdAndParticipationDate(@Param("userId") Long userId, @Param("placeId") Long placeId, @Param("date") LocalDate date);
+
+
+    @Query("SELECT p FROM Place p WHERE p.city.name = :cityName")
+    List<Place> findByCityName(@Param("cityName") String cityName);
 }

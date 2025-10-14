@@ -162,4 +162,11 @@ public class UserProfileService {
                 user.getRoles()
         );
     }
+
+    public void updateProfilePicture(Long userId, String imageUrl) {
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        user.setProfilePictureUrl(imageUrl);
+        userProfileRepository.save(user);
+    }
 }

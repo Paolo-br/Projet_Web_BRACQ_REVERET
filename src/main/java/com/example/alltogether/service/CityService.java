@@ -54,6 +54,7 @@ public class CityService {
                     city.setName(cityDTO.getName());
                     city.setLatitude(cityDTO.getLatitude());
                     city.setLongitude(cityDTO.getLongitude());
+                    city.setImageUrl(cityDTO.getImageUrl());
                     City updated = cityRepository.save(city);
                     return toDTO(updated);
                 });
@@ -70,11 +71,12 @@ public class CityService {
         city.setName(dto.getName());
         city.setLatitude(dto.getLatitude());
         city.setLongitude(dto.getLongitude());
+        city.setImageUrl(dto.getImageUrl());
         return city;
     }
 
     // Conversion Entity → DTO
     public CityDTO toDTO(City city) {
-        return new CityDTO(city.getId(), city.getName(), city.getLatitude(), city.getLongitude());
+        return new CityDTO(city.getId(), city.getName(), city.getLatitude(), city.getLongitude(), city.getImageUrl());
     }
 }

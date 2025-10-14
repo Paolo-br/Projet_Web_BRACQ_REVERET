@@ -24,6 +24,7 @@ public class UserProfile implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
+
     @Email
     @NotBlank
     @Column(nullable = false, unique = true)
@@ -42,7 +43,6 @@ public class UserProfile implements UserDetails {
     private String currentCity;
 
     private String countryOrigin;
-    private String profilePictureUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
@@ -50,7 +50,10 @@ public class UserProfile implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles = new HashSet<>();
 
-    // CORRECTION : Constructeur sans encodage automatique du mot de passe
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    //Constructeur sans encodage automatique du mot de passe
     public UserProfile() {}
 
     public UserProfile(String firstName, String lastName, String email, String password,
@@ -156,4 +159,6 @@ public class UserProfile implements UserDetails {
         roles.remove("ADMIN");
         roles.add("USER");
     }
+
+
 }

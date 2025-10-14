@@ -137,3 +137,42 @@ INSERT INTO place (name, category, address, description, opening_hours, latitude
                                                                                                           ('Parc du Thabor', 'PARC', 'Place Saint-Mélaine', 'Superbe jardin public au cœur de Rennes', NULL,48.1148, -1.6748, 11),
                                                                                                           ('Bibliothèque des Champs Libres', 'BIBLIOTHEQUE', '10 Cours des Alliés', 'Bibliothèque moderne de Rennes Métropole', NULL,48.1069, -1.6720, 11)
     ON CONFLICT (name) DO NOTHING;
+
+
+
+
+-- =====================================
+-- IMAGES DES VILLES
+-- =====================================
+
+-- Mettez à jour les images des villes
+UPDATE city SET image_url =
+                    CASE
+                        WHEN name = 'Paris' THEN '/uploads/paris.jpg'
+                        WHEN name = 'Lyon' THEN '/uploads/lyon.jpg'
+                        WHEN name = 'Marseille' THEN '/uploads/marseille.jpeg'
+                        WHEN name = 'Toulouse' THEN '/uploads/toulouse.jpg'
+                        WHEN name = 'Bordeaux' THEN '/uploads/bordeaux.jpg'
+                        WHEN name = 'Lille' THEN '/uploads/lille.jpg'
+                        WHEN name = 'Nice' THEN '/uploads/nice.jpg'
+                        WHEN name = 'Nantes' THEN '/uploads/nantes.jpeg'
+                        WHEN name = 'Montpellier' THEN '/uploads/montpellier.jpg'
+                        WHEN name = 'Strasbourg' THEN '/uploads/strasbourg.jpg'
+                        WHEN name = 'Rennes' THEN '/uploads/rennes.jpg'
+                        END
+WHERE image_url IS NULL;
+
+ALTER TABLE place ADD COLUMN IF NOT EXISTS photos TEXT[];
+-- Version sécurisée pour exécution multiple
+UPDATE place SET photos =
+                     CASE
+                         WHEN name = 'Le Syndicat' THEN ARRAY['/uploads/places/syndicat_1.jpg', '/uploads/places/syndicat_2.jpg']
+                         WHEN name = 'Little Red Door' THEN ARRAY['/uploads/places/littlered_1.jpg', '/uploads/places/littlered_2.jpg']
+                         WHEN name = 'Harry''s New York Bar' THEN ARRAY['/uploads/places/harry_1.jpg', '/uploads/places/harry_2.jpg']
+                         WHEN name = 'La Candelaria' THEN ARRAY['/uploads/places/candelaria_1.jpg', '/uploads/places/candelaria_2.jpg']
+                         WHEN name = 'Le Comptoir Général' THEN ARRAY['/uploads/places/comptoir_1.jpg', '/uploads/places/comptoir_2.jpg']
+                         WHEN name = 'Rex Club' THEN ARRAY['/uploads/places/rex_1.jpg', '/uploads/places/rex_2.jpg']
+                         WHEN name = 'Jardin du Luxembourg' THEN ARRAY['/uploads/places/luxembourg_1.jpg', '/uploads/places/luxembourg_2.jpg']
+                         WHEN name = 'Bibliothèque Sainte-Geneviève' THEN ARRAY['/uploads/places/genevieve_1.jpg', '/uploads/places/genevieve_2.jpg']
+                         END
+WHERE city_id = 1 AND photos IS NULL;

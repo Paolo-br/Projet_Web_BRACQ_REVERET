@@ -87,4 +87,11 @@ public class Place {
     public void setLongitude(Float longitude) { this.longitude = longitude; }
     public City getCity() { return city; }
     public void setCity(City city) { this.city = city; }
+
+    public void addPhoto(String photoUrl) {
+        this.photos.add(photoUrl);
+    }
+
 }
+
+
