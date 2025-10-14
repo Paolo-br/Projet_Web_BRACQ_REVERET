@@ -15,7 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
 
+
+import java.util.Arrays;
 
 /**
  * Classe de configuration principale de Spring Security.
@@ -45,12 +50,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Ajout de la config CORS
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints publics
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/map/**").permitAll()  // Autoriser tous les endpoints de la carte
                         .requestMatchers("/api/cities/**").permitAll()
+                        .requestMatchers("/api/places/**").permitAll()
 
                         // Endpoints USER (lecture seule des lieux)
                         .requestMatchers(HttpMethod.GET, "/api/places/**").hasAnyRole("USER", "ADMIN")
@@ -71,6 +79,18 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173")); // Ports courants pour React/Vue
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     /**
      * Déclare le PasswordEncoder utilisé pour hacher les mots de passe.

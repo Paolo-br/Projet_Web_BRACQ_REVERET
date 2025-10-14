@@ -176,3 +176,17 @@ UPDATE place SET photos =
                          WHEN name = 'Bibliothèque Sainte-Geneviève' THEN ARRAY['/uploads/places/genevieve_1.jpg', '/uploads/places/genevieve_2.jpg']
                          END
 WHERE city_id = 1 AND photos IS NULL;
+
+
+UPDATE place SET photos =
+                     CASE
+                         WHEN name = 'Le Sucre' THEN ARRAY['/uploads/places/sucre_1.jpg', '/uploads/places/sucre_2.jpg']
+                         WHEN name = 'Ninkasi Gerland' THEN ARRAY['/uploads/places/ninkasi_1.jpg', '/uploads/places/ninkasi_2.jpg']
+                         WHEN name = 'Soda Bar' THEN ARRAY['/uploads/places/soda_1.jpg', '/uploads/places/soda_2.jpg']
+                         WHEN name = 'La Faute aux Ours' THEN ARRAY['/uploads/places/faute_1.jpg', '/uploads/places/faute_2.jpg']
+                         WHEN name = 'L’Alibi' THEN ARRAY['/uploads/places/alibi_1.jpg', '/uploads/places/alibi_2.jpg']
+                         WHEN name = 'Le Petit Salon' THEN ARRAY['/uploads/places/salon_1.jpg', '/uploads/places/salon_2.jpg']
+                         WHEN name = 'Parc de la Tête d’Or' THEN ARRAY['/uploads/places/tete_1.jpg', '/uploads/places/tete_2.jpg']
+                         WHEN name = 'Bibliothèque de la Part-Dieu' THEN ARRAY['/uploads/places/biblio_part_1.jpg', '/uploads/places/biblio_part_2.jpg']
+                         END
+WHERE city_id = 2 AND photos IS NULL;
