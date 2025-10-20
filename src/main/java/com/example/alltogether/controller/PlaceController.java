@@ -11,11 +11,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 
+/**
+ * Contrôleur REST pour la gestion des lieux.
+ * Endpoints publics en GET, protégés par ADMIN pour POST/PUT/DELETE.
+ */
 @RestController
 @RequestMapping("/api/places")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200"}, 
+             allowedHeaders = "*", 
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class PlaceController {
 
     private final PlaceService placeService;

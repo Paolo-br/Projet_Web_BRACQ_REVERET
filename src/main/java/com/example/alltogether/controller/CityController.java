@@ -8,9 +8,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+/**
+ * Contrôleur REST pour la gestion des villes.
+ * Endpoints publics en GET, protégés par ADMIN pour POST/PUT/DELETE.
+ */
 @RestController
 @RequestMapping("/api/cities")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200"}, 
+             allowedHeaders = "*", 
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class CityController {
 
     private final CityService cityService;
