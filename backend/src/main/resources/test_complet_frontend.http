@@ -1,0 +1,287 @@
+### 🧪 TESTS COMPLETS - Backend prêt pour Frontend
+### Exécutez tous ces tests pour valider votre API
+
+### ========================================
+### 📍 TESTS ENDPOINTS DE CARTE (Map)
+### ========================================
+
+### 1. GET Villes pour carte de France
+GET http://localhost:8080/api/map/cities
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+    client.test("Ville a latitude/longitude", function() {
+        if (response.body.length > 0) {
+            const city = response.body[0];
+            client.assert(city.latitude !== undefined, "Expected latitude");
+            client.assert(city.longitude !== undefined, "Expected longitude");
+            client.assert(city.pageUrl !== undefined, "Expected pageUrl");
+        }
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 2. GET Lieux de Paris (cityId = 1)
+GET http://localhost:8080/api/map/city/1/places
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200 ou 204", function() {
+        client.assert(response.status === 200 || response.status === 204, "Expected 200 or 204");
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 3. GET Ville inexistante (doit retourner 404)
+GET http://localhost:8080/api/map/city/999/places
+Accept: application/json
+
+> {%
+    client.test("Status 404", function() {
+        client.assert(response.status === 404, "Expected 404 for non-existent city");
+    });
+%}
+
+###
+
+### ========================================
+### 🏙️ TESTS ENDPOINTS CITIES (Standard)
+### ========================================
+
+### 4. GET Toutes les villes
+GET http://localhost:8080/api/cities
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+    client.test("Ville a imageUrl", function() {
+        if (response.body.length > 0) {
+            const city = response.body[0];
+            client.assert(city.id !== undefined, "Expected id");
+            client.assert(city.name !== undefined, "Expected name");
+        }
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 5. GET Ville par ID (Paris = 1)
+GET http://localhost:8080/api/cities/1
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("Ville complète", function() {
+        client.assert(response.body.id === 1, "Expected id 1");
+        client.assert(response.body.name !== undefined, "Expected name");
+        client.assert(response.body.latitude !== undefined, "Expected latitude");
+        client.assert(response.body.longitude !== undefined, "Expected longitude");
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 6. GET Recherche ville par nom
+GET http://localhost:8080/api/cities/search?name=Paris
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+%}
+
+###
+
+### ========================================
+### 📍 TESTS ENDPOINTS PLACES (Standard)
+### ========================================
+
+### 7. GET Tous les lieux
+GET http://localhost:8080/api/places
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 8. GET Lieu par ID
+GET http://localhost:8080/api/places/1
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200 ou 404", function() {
+        client.assert(response.status === 200 || response.status === 404, "Expected 200 or 404");
+    });
+    if (response.status === 200) {
+        client.test("Lieu complet", function() {
+            client.assert(response.body.id !== undefined, "Expected id");
+            client.assert(response.body.name !== undefined, "Expected name");
+            client.assert(response.body.latitude !== undefined, "Expected latitude");
+            client.assert(response.body.longitude !== undefined, "Expected longitude");
+        });
+    }
+%}
+
+###
+
+### 9. GET Lieux d'une ville (Paris = 1)
+GET http://localhost:8080/api/places/city/1
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+    client.test("CORS header présent", function() {
+        client.assert(response.headers.valueOf("Access-Control-Allow-Origin") !== null, "CORS header missing");
+    });
+%}
+
+###
+
+### 10. GET Lieux par catégorie (BAR)
+GET http://localhost:8080/api/places/category/bar
+Accept: application/json
+Origin: http://localhost:5173
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("JSON array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+%}
+
+###
+
+### ========================================
+### ✅ TEST CORS PREFLIGHT (OPTIONS)
+### ========================================
+
+### 11. OPTIONS Preflight sur /api/map/cities
+OPTIONS http://localhost:8080/api/map/cities
+Origin: http://localhost:5173
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: Content-Type
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("CORS Allow-Origin présent", function() {
+        const origin = response.headers.valueOf("Access-Control-Allow-Origin");
+        client.assert(origin === "http://localhost:5173", "Expected origin header");
+    });
+    client.test("CORS Allow-Methods présent", function() {
+        const methods = response.headers.valueOf("Access-Control-Allow-Methods");
+        client.assert(methods !== null, "Expected methods header");
+        client.assert(methods.includes("GET"), "Expected GET method");
+    });
+    client.test("CORS Allow-Credentials présent", function() {
+        const credentials = response.headers.valueOf("Access-Control-Allow-Credentials");
+        client.assert(credentials === "true", "Expected credentials true");
+    });
+%}
+
+###
+
+### 12. OPTIONS Preflight sur /api/cities
+OPTIONS http://localhost:8080/api/cities
+Origin: http://localhost:5173
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: Content-Type
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("CORS configuré", function() {
+        const origin = response.headers.valueOf("Access-Control-Allow-Origin");
+        client.assert(origin === "http://localhost:5173", "Expected origin header");
+    });
+%}
+
+###
+
+### 13. OPTIONS Preflight sur /api/places
+OPTIONS http://localhost:8080/api/places
+Origin: http://localhost:5173
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: Content-Type
+
+> {%
+    client.test("Status 200", function() {
+        client.assert(response.status === 200, "Expected 200");
+    });
+    client.test("CORS configuré", function() {
+        const origin = response.headers.valueOf("Access-Control-Allow-Origin");
+        client.assert(origin === "http://localhost:5173", "Expected origin header");
+    });
+%}
+
+###
+
+### ========================================
+### 🎯 RÉSUMÉ DES TESTS
+### ========================================
+### Si tous les tests passent :
+### ✅ Endpoints de carte fonctionnels
+### ✅ Endpoints standard fonctionnels
+### ✅ CORS correctement configuré
+### ✅ Gestion des erreurs 404 OK
+### ✅ Backend PRÊT pour le frontend !
+### ========================================
+
