@@ -22,15 +22,24 @@ public class StaticImageController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getCityImage(@PathVariable String filename) {
         try {
-            Resource resource = new ClassPathResource("uploads/" + filename);
-            
-            if (!resource.exists()) {
+            // 1) Try to load from classpath:/static/uploads (packaged resources)
+            Resource resource = new ClassPathResource("static/uploads/" + filename);
+
+            // 2) If not found on classpath, try the filesystem path (useful in dev)
+            if (!resource.exists() || !resource.isReadable()) {
+                java.nio.file.Path fsPath = java.nio.file.Paths.get("src/main/resources/static/uploads").resolve(filename).normalize().toAbsolutePath();
+                if (java.nio.file.Files.exists(fsPath) && java.nio.file.Files.isRegularFile(fsPath)) {
+                    resource = new org.springframework.core.io.UrlResource(fsPath.toUri());
+                }
+            }
+
+            if (resource == null || !resource.exists()) {
                 System.out.println("❌ Image non trouvée: uploads/" + filename);
                 return ResponseEntity.notFound().build();
             }
 
             System.out.println("✅ Image trouvée: uploads/" + filename);
-            
+
             // Déterminer le type MIME en fonction de l'extension
             String contentType = getContentType(filename);
 
@@ -38,7 +47,7 @@ public class StaticImageController {
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CACHE_CONTROL, "max-age=31536000")
                     .body(resource);
-                    
+
         } catch (Exception e) {
             System.err.println("❌ Erreur lors du chargement de l'image: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

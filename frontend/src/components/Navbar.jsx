@@ -3,14 +3,31 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Logo from "../assets/Logo.png";
 import authService from "../services/authService";
+import userService from "../services/userService";
+import API_CONFIG from "../config/apiConfig";
 
 function Navbar() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   // Vérifier si l'utilisateur est connecté
   useEffect(() => {
     setIsAuthenticated(authService.isAuthenticated());
+    if (authService.isAuthenticated()) {
+      (async () => {
+        try {
+          const profile = await userService.getMyProfile();
+          if (profile && profile.profilePictureUrl) {
+            const rel = profile.profilePictureUrl;
+            const src = rel.startsWith('/') ? `${API_CONFIG.BACKEND_URL}${rel}` : `${API_CONFIG.BACKEND_URL}/${rel}`;
+            setProfilePhoto(src);
+          }
+        } catch (e) {
+          console.debug('Navbar: impossible de charger la photo de profil', e);
+        }
+      })();
+    }
   }, []);
 
   const handleLogout = () => {
@@ -81,7 +98,11 @@ function Navbar() {
                 onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                 title="Mon profil"
               >
-                👤
+                {profilePhoto ? (
+                  <img src={profilePhoto} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; setProfilePhoto(null); }} />
+                ) : (
+                  '👤'
+                )}
               </div>
             </Link>
           </div>

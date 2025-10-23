@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Vite / build
+/frontend/.vite/
+/frontend/dist/
+
+# npm lockfile (optional)
+package-lock.json
+pnpm-lock.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

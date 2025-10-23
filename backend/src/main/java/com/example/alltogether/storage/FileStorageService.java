@@ -33,6 +33,8 @@ public class FileStorageService {
             if (!Files.exists(rootLocation)) {
                 Files.createDirectories(rootLocation);
             }
+            // Log the absolute path used for uploads so developers can debug where files are stored
+            System.out.println("[FileStorageService] upload root: " + rootLocation.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new RuntimeException("Impossible d’initialiser le dossier de stockage", e);
         }
@@ -83,6 +85,39 @@ public class FileStorageService {
 
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors de la suppression du fichier", e);
+        }
+    }
+
+    // Retourne la liste des fichiers présents dans le dossier d'upload (noms relatifs)
+    public java.util.List<String> listFiles() {
+        try {
+            if (!Files.exists(rootLocation)) return java.util.Collections.emptyList();
+            try (java.util.stream.Stream<Path> stream = Files.list(rootLocation)) {
+                return stream
+                        .filter(p -> Files.isRegularFile(p))
+                        .map(p -> p.getFileName().toString())
+                        .collect(java.util.stream.Collectors.toList());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Impossible de lister les fichiers", e);
+        }
+    }
+
+    // Charge un fichier en tant que Resource (UrlResource) pour le servir
+    public org.springframework.core.io.Resource loadAsResource(String filename) {
+        try {
+            Path file = rootLocation.resolve(filename).normalize().toAbsolutePath();
+            if (!Files.exists(file) || !Files.isRegularFile(file)) {
+                throw new RuntimeException("Fichier non trouvé: " + filename);
+            }
+            org.springframework.core.io.UrlResource resource = new org.springframework.core.io.UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Le fichier n'est pas lisible: " + filename);
+            }
+        } catch (java.net.MalformedURLException e) {
+            throw new RuntimeException("Erreur lors de la lecture du fichier", e);
         }
     }
 

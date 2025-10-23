@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/places/**").permitAll()
                         .requestMatchers("/api/images/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/debug/**").permitAll()
 
                         // Endpoints USER (lecture + participations)
                         .requestMatchers("/api/participations/**").hasAnyRole("USER", "ADMIN")

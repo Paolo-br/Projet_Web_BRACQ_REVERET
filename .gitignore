@@ -12,3 +12,21 @@ Thumbs.db
 *.bak
 *.backup
 
+# Maven / Java
+/backend/target/
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+
+# Uploaded files
+/uploads/
+
+# Env
+.env
+.env.*
+
+# Editor files
+*.iml
+.idea/*
+

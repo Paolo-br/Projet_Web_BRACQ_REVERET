@@ -32,9 +32,11 @@ const API_CONFIG = {
       PARTICIPATE: (placeId) => `${API_BASE_URL}/participations/${placeId}`,
     },
     USER: {
-      PROFILE: `${API_BASE_URL}/user/profile`,
-      UPDATE: `${API_BASE_URL}/user/profile`,
-      UPDATE_PASSWORD: `${API_BASE_URL}/user/password`,
+      PROFILE: `${API_BASE_URL}/profile/me`,
+      UPDATE: `${API_BASE_URL}/profile/me`,
+      UPLOAD_PHOTO: `${API_BASE_URL}/images/user`,
+      UPLOAD_MY_PHOTO: `${API_BASE_URL}/profile/me/photo`,
+      UPDATE_PASSWORD: `${API_BASE_URL}/users/{id}/password`,
     },
   },
 };
