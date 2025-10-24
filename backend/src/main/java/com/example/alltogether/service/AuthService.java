@@ -41,7 +41,7 @@ public class AuthService implements UserDetailsService {
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setAge(dto.getAge());
+        user.setYearOfBirth(dto.getYearOfBirth());
         user.setCurrentCity(dto.getCurrentCity());
         user.setCountryOrigin(dto.getCountryOrigin());
         user.setRoles("USER"); // rôle par défaut

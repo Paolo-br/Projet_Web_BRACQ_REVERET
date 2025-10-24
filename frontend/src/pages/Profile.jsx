@@ -189,7 +189,7 @@ function EditProfileForm({ profile, onSaved, onCancel }) {
     firstName: profile.firstName,
     lastName: profile.lastName,
     email: profile.email,
-    age: profile.age,
+    yearOfBirth: profile.yearOfBirth,
     currentCity: profile.currentCity,
     countryOrigin: profile.countryOrigin,
     profilePictureUrl: profile.profilePictureUrl
@@ -236,10 +236,10 @@ function EditProfileForm({ profile, onSaved, onCancel }) {
   return (
     <div style={{ padding:15, background:'#fafafa', borderRadius:6 }}>
       <div style={{ display:'grid', gap:8 }}>
-        <input name="firstName" value={form.firstName} onChange={handleChange} />
-        <input name="lastName" value={form.lastName} onChange={handleChange} />
-        <input name="email" value={form.email} onChange={handleChange} />
-        <input name="age" type="number" value={form.age} onChange={handleChange} />
+        <input name="firstName" placeholder="Prénom" value={form.firstName} onChange={handleChange} />
+        <input name="lastName" placeholder="Nom" value={form.lastName} onChange={handleChange} />
+        <input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+        <input name="yearOfBirth" type="number" placeholder="Année de naissance" min="1900" max="2007" value={form.yearOfBirth} onChange={handleChange} />
         {/* currentCity select populated from backend */}
         <select name="currentCity" value={form.currentCity} onChange={handleChange}>
           <option value="">-- Choisir une ville --</option>

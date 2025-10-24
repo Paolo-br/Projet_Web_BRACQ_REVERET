@@ -8,6 +8,7 @@ public class UserProfileDTO {
     private String lastName;
     private String email;
     private int age;
+    private int yearOfBirth;
     private String currentCity;
     private String countryOrigin;
     private String profilePictureUrl;
@@ -17,13 +18,14 @@ public class UserProfileDTO {
     public UserProfileDTO() {}
 
     public UserProfileDTO(Long id, String firstName, String lastName, String email,
-                          int age, String currentCity, String countryOrigin,
+                          int age, int yearOfBirth, String currentCity, String countryOrigin,
                           String profilePictureUrl, Set<String> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.age = age;
+        this.yearOfBirth = yearOfBirth;
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
         this.profilePictureUrl = profilePictureUrl;
@@ -45,6 +47,9 @@ public class UserProfileDTO {
 
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
+    
+    public int getYearOfBirth() { return yearOfBirth; }
+    public void setYearOfBirth(int yearOfBirth) { this.yearOfBirth = yearOfBirth; }
 
     public String getCurrentCity() { return currentCity; }
     public void setCurrentCity(String currentCity) { this.currentCity = currentCity; }

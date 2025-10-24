@@ -17,9 +17,13 @@ const API_CONFIG = {
     },
     PLACES: {
       ALL: `${API_BASE_URL}/places`,
+      GET_ALL: `${API_BASE_URL}/places`,
       BY_ID: (id) => `${API_BASE_URL}/places/${id}`,
+      GET_BY_ID: (id) => `${API_BASE_URL}/places/${id}`,
       BY_CITY: (cityId) => `${API_BASE_URL}/places/city/${cityId}`,
+      GET_BY_CITY: (cityId) => `${API_BASE_URL}/places/city/${cityId}`,
       BY_CATEGORY: (category) => `${API_BASE_URL}/places/category/${category}`,
+      SEARCH: `${API_BASE_URL}/places/search`,
     },
     MAP: {
       CITIES: `${API_BASE_URL}/map/cities`,

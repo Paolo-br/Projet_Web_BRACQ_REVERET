@@ -34,9 +34,10 @@ public class UserProfile implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Min(18)
-    @Max(100)
-    private int age;
+    @Min(1900)
+    @Max(2100)
+    @Column(name = "year_of_birth")
+    private int yearOfBirth;
 
     @NotBlank
     @Column(name = "current_city", nullable = false)
@@ -57,12 +58,12 @@ public class UserProfile implements UserDetails {
     public UserProfile() {}
 
     public UserProfile(String firstName, String lastName, String email, String password,
-                       int age, String currentCity, String countryOrigin) {
+                       int yearOfBirth, String currentCity, String countryOrigin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password; // L'encodage sera fait dans le service
-        this.age = age;
+        this.yearOfBirth = yearOfBirth;
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
     }
@@ -78,8 +79,14 @@ public class UserProfile implements UserDetails {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    public int getYearOfBirth() { return yearOfBirth; }
+    public void setYearOfBirth(int yearOfBirth) { this.yearOfBirth = yearOfBirth; }
+    
+    // Méthode pour calculer l'âge dynamiquement
+    public int getAge() {
+        return java.time.Year.now().getValue() - yearOfBirth;
+    }
+    
     public String getCurrentCity() { return currentCity; }
     public void setCurrentCity(String currentCity) { this.currentCity = currentCity; }
     public String getCountryOrigin() { return countryOrigin; }

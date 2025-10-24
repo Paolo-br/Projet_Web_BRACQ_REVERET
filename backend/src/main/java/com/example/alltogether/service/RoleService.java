@@ -62,6 +62,7 @@ public class RoleService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getAge(),
+                user.getYearOfBirth(),
                 user.getCurrentCity(),
                 user.getCountryOrigin(),
                 user.getProfilePictureUrl(),

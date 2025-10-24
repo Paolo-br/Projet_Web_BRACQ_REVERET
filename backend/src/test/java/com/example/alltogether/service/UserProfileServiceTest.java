@@ -44,7 +44,7 @@ class UserProfileServiceTest {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john.doe@example.com");
-        user.setAge(30);
+        user.setYearOfBirth(1995);
         user.setCurrentCity("Paris");
         user.setCountryOrigin("France");
 
@@ -53,7 +53,7 @@ class UserProfileServiceTest {
         userCreateDTO.setLastName("Doe");
         userCreateDTO.setEmail("john.doe@example.com");
         userCreateDTO.setPassword("password123");
-        userCreateDTO.setAge(30);
+        userCreateDTO.setYearOfBirth(1995);
         userCreateDTO.setCurrentCity("Paris");
         userCreateDTO.setCountryOrigin("France");
 
@@ -61,7 +61,7 @@ class UserProfileServiceTest {
         userUpdateDTO.setFirstName("John");
         userUpdateDTO.setLastName("Smith");
         userUpdateDTO.setEmail("john.smith@example.com");
-        userUpdateDTO.setAge(31);
+        userUpdateDTO.setYearOfBirth(1994);
         userUpdateDTO.setCurrentCity("Lyon");
         userUpdateDTO.setCountryOrigin("USA");
     }

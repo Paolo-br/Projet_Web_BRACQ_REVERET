@@ -10,7 +10,7 @@ function Register() {
     lastName: "",
     email: "",
     password: "",
-    age: "18",
+    yearOfBirth: "2000",
     currentCity: "",
     countryOrigin: ""
   });
@@ -66,10 +66,10 @@ function Register() {
     setError("");
 
     try {
-      // Convertir l'âge en nombre
+      // Convertir l'année de naissance en nombre
       const userData = {
         ...formData,
-        age: parseInt(formData.age, 10)
+        yearOfBirth: parseInt(formData.yearOfBirth, 10)
       };
 
       await authService.register(userData);
@@ -182,16 +182,16 @@ function Register() {
           />
         </div>
 
-        {/* Âge */}
+        {/* Année de naissance */}
         <div style={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
-          <label htmlFor="age" style={labelStyle}>Âge *</label>
+          <label htmlFor="yearOfBirth" style={labelStyle}>Année de naissance *</label>
           <input
             type="number"
-            id="age"
-            name="age"
-            min="18"
-            max="100"
-            value={formData.age}
+            id="yearOfBirth"
+            name="yearOfBirth"
+            min="1900"
+            max="2007"
+            value={formData.yearOfBirth}
             onChange={handleChange}
             required
             style={inputStyle}

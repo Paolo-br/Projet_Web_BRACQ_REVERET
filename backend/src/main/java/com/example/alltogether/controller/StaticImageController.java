@@ -16,7 +16,7 @@ import java.nio.file.Files;
  */
 @RestController
 @RequestMapping("/uploads")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://localhost:4200"})
 public class StaticImageController {
 
     @GetMapping("/{filename:.+}")
@@ -54,17 +54,93 @@ public class StaticImageController {
         }
     }
 
-    @GetMapping("/places/{filename:.+}")
-    public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename) {
+    @GetMapping("/city/{filename:.+}")
+    public ResponseEntity<Resource> getCityImage2(@PathVariable String filename) {
         try {
-            Resource resource = new ClassPathResource("uploads/places/" + filename);
+            // 1) Try to load from classpath:/static/uploads/city (packaged resources)
+            Resource resource = new ClassPathResource("static/uploads/city/" + filename);
             
-            if (!resource.exists()) {
-                System.out.println("Image place non trouvée: uploads/places/" + filename);
+            // 2) If not found on classpath, try the filesystem path (useful in dev)
+            if (!resource.exists() || !resource.isReadable()) {
+                System.out.println("Tentative de chargement depuis le filesystem pour: " + filename);
+                
+                // Essayer plusieurs chemins possibles
+                java.nio.file.Path[] possiblePaths = {
+                    java.nio.file.Paths.get("src/main/resources/static/uploads/city").resolve(filename).normalize().toAbsolutePath(),
+                    java.nio.file.Paths.get("backend/src/main/resources/static/uploads/city").resolve(filename).normalize().toAbsolutePath()
+                };
+                
+                for (java.nio.file.Path fsPath : possiblePaths) {
+                    System.out.println("Tentative: " + fsPath.toString());
+                    if (java.nio.file.Files.exists(fsPath) && java.nio.file.Files.isRegularFile(fsPath)) {
+                        resource = new org.springframework.core.io.UrlResource(fsPath.toUri());
+                        System.out.println("✅ Image city trouvée sur filesystem: " + fsPath.toString());
+                        break;
+                    }
+                }
+                
+                if (!resource.exists()) {
+                    System.out.println("❌ Image city non trouvée sur aucun chemin filesystem");
+                }
+            } else {
+                System.out.println("✅ Image city trouvée sur classpath: " + filename);
+            }
+            
+            if (resource == null || !resource.exists()) {
+                System.out.println("❌ Image city non trouvée (finale): uploads/city/" + filename);
                 return ResponseEntity.notFound().build();
             }
 
-            System.out.println("Image place trouvée: uploads/places/" + filename);
+            String contentType = getContentType(filename);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=31536000")
+                    .body(resource);
+                    
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du chargement de l'image city: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/places/{filename:.+}")
+    public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename) {
+        try {
+            // 1) Try to load from classpath:/static/uploads/places (packaged resources)
+            Resource resource = new ClassPathResource("static/uploads/places/" + filename);
+            
+            // 2) If not found on classpath, try the filesystem path (useful in dev)
+            if (!resource.exists() || !resource.isReadable()) {
+                System.out.println("Tentative de chargement depuis le filesystem pour: " + filename);
+                
+                // Essayer plusieurs chemins possibles
+                java.nio.file.Path[] possiblePaths = {
+                    java.nio.file.Paths.get("src/main/resources/static/uploads/places").resolve(filename).normalize().toAbsolutePath(),
+                    java.nio.file.Paths.get("backend/src/main/resources/static/uploads/places").resolve(filename).normalize().toAbsolutePath()
+                };
+                
+                for (java.nio.file.Path fsPath : possiblePaths) {
+                    System.out.println("Tentative: " + fsPath.toString());
+                    if (java.nio.file.Files.exists(fsPath) && java.nio.file.Files.isRegularFile(fsPath)) {
+                        resource = new org.springframework.core.io.UrlResource(fsPath.toUri());
+                        System.out.println("✅ Image place trouvée sur filesystem: " + fsPath.toString());
+                        break;
+                    }
+                }
+                
+                if (!resource.exists()) {
+                    System.out.println("❌ Image place non trouvée sur aucun chemin filesystem");
+                }
+            } else {
+                System.out.println("✅ Image place trouvée sur classpath: " + filename);
+            }
+            
+            if (resource == null || !resource.exists()) {
+                System.out.println("❌ Image place non trouvée (finale): uploads/places/" + filename);
+                return ResponseEntity.notFound().build();
+            }
 
             String contentType = getContentType(filename);
 
@@ -75,6 +151,7 @@ public class StaticImageController {
                     
         } catch (Exception e) {
             System.err.println("❌ Erreur lors du chargement de l'image place: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

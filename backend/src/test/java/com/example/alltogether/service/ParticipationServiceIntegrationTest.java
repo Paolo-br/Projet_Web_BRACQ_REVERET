@@ -52,7 +52,7 @@ class ParticipationServiceIntegrationTest {
         user.setLastName("User");
         user.setEmail("test.user@example.com");
         user.setPassword("password123");
-        user.setAge(25);
+        user.setYearOfBirth(2000);
         user.setCurrentCity("Paris");
         user = userProfileRepository.save(user);
 

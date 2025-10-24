@@ -25,12 +25,17 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  flex-direction: column;   /* empile les enfants verticalement */
-  align-items: left;      /* centre horizontalement */
-  justify-content: flex-start; /* collé en haut */
+  flex-direction: column;
+  align-items: left;
+  justify-content: flex-start;
   min-width: 320px;
   min-height: 100vh;
   padding-top: 3rem;
+  overflow-x: hidden; /* Empêche le scroll horizontal */
+}
+
+* {
+  box-sizing: border-box;
 }
 
 h1 {

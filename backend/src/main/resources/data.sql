@@ -2,17 +2,17 @@
 -- CITIES (à insérer en premier)
 -- =====================================
 INSERT INTO city (id, name, description, latitude, longitude, image_url) VALUES
-(1, 'Paris', 'La ville lumière, capitale de la culture et de la gastronomie française', 48.8566, 2.3522, '/paris.jpg'),
-(2, 'Lyon', 'Capitale de la gastronomie française, riche en histoire et culture', 45.7640, 4.8357, '/lyon.jpg'),
-(3, 'Marseille', 'Ville portuaire dynamique au bord de la Méditerranée', 43.2965, 5.3698, '/marseille.jpeg'),
-(4, 'Toulouse', 'La ville rose, centre de l''aéronautique et de la recherche', 43.6047, 1.4442, '/toulouse.jpg'),
-(5, 'Bordeaux', 'Capitale mondiale du vin, ville d''art et d''histoire', 44.8378, -0.5792, '/bordeaux.jpg'),
-(6, 'Lille', 'Ville dynamique du Nord, centre culturel et étudiant', 50.6292, 3.0573, '/lille.jpg'),
-(7, 'Nice', 'Perle de la Côte d''Azur, entre mer et montagnes', 43.7102, 7.2620, '/nice.jpg'),
-(8, 'Nantes', 'Ville créative et innovante de l''Ouest', 47.2184, -1.5536, '/nantes.jpeg'),
-(10, 'Strasbourg', 'Capitale européenne, entre France et Allemagne', 48.5734, 7.7521, '/strasbourg.jpg'),
-(9, 'Montpellier', 'Ville étudiante ensoleillée du Sud', 43.6108, 3.8767, '/montpellier.jpg'),
-(11, 'Rennes', 'Capitale bretonne, ville jeune et dynamique', 48.1173, -1.6778, '/rennes.jpg')
+(1, 'Paris', 'La ville lumière, capitale de la culture et de la gastronomie française', 48.8566, 2.3522, '/uploads/city/paris.jpg'),
+(2, 'Lyon', 'Capitale de la gastronomie française, riche en histoire et culture', 45.7640, 4.8357, '/uploads/city/lyon.jpg'),
+(3, 'Marseille', 'Ville portuaire dynamique au bord de la Méditerranée', 43.2965, 5.3698, '/uploads/city/marseille.jpeg'),
+(4, 'Toulouse', 'La ville rose, centre de l''aéronautique et de la recherche', 43.6047, 1.4442, '/uploads/city/toulouse.jpg'),
+(5, 'Bordeaux', 'Capitale mondiale du vin, ville d''art et d''histoire', 44.8378, -0.5792, '/uploads/city/bordeaux.jpg'),
+(6, 'Lille', 'Ville dynamique du Nord, centre culturel et étudiant', 50.6292, 3.0573, '/uploads/city/lille.jpg'),
+(7, 'Nice', 'Perle de la Côte d''Azur, entre mer et montagnes', 43.7102, 7.2620, '/uploads/city/nice.jpg'),
+(8, 'Nantes', 'Ville créative et innovante de l''Ouest', 47.2184, -1.5536, '/uploads/city/nantes.jpeg'),
+(10, 'Strasbourg', 'Capitale européenne, entre France et Allemagne', 48.5734, 7.7521, '/uploads/city/strasbourg.jpg'),
+(9, 'Montpellier', 'Ville étudiante ensoleillée du Sud', 43.6108, 3.8767, '/uploads/city/montpellier.jpg'),
+(11, 'Rennes', 'Capitale bretonne, ville jeune et dynamique', 48.1173, -1.6778, '/uploads/city/rennes.jpg')
 ON CONFLICT (id) DO NOTHING;
 
 -- Réinitialiser la séquence pour l'auto-increment
@@ -349,3 +349,42 @@ UPDATE city SET description = 'Ville créative et innovante de l''Ouest' WHERE n
 UPDATE city SET description = 'Ville étudiante ensoleillée du Sud' WHERE name = 'Montpellier';
 UPDATE city SET description = 'Capitale européenne, entre France et Allemagne' WHERE name = 'Strasbourg';
 UPDATE city SET description = 'Capitale bretonne, ville jeune et dynamique' WHERE name = 'Rennes';
+
+-- =====================================
+-- PLACE PHOTOS
+-- =====================================
+-- Paris places
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/syndicat_1.jpg' FROM place WHERE name = 'Le Syndicat';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/syndicat_2.jpg' FROM place WHERE name = 'Le Syndicat';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/littlered_1.jpg' FROM place WHERE name = 'Little Red Door';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/littlered_2.jpg' FROM place WHERE name = 'Little Red Door';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/harry_1.jpg' FROM place WHERE name = 'Harry''s New York Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/harry_2.jpg' FROM place WHERE name = 'Harry''s New York Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/candelaria_1.jpg' FROM place WHERE name = 'La Candelaria';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/candelaria_2.jpg' FROM place WHERE name = 'La Candelaria';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/comptoir_1.jpg' FROM place WHERE name = 'Le Comptoir Général';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/comptoir_2.jpg' FROM place WHERE name = 'Le Comptoir Général';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/rex_1.jpg' FROM place WHERE name = 'Rex Club';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/rex_2.jpg' FROM place WHERE name = 'Rex Club';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/luxembourg_1.jpg' FROM place WHERE name = 'Jardin du Luxembourg';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/luxembourg_2.jpg' FROM place WHERE name = 'Jardin du Luxembourg';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/genevieve_1.jpg' FROM place WHERE name = 'Bibliothèque Sainte-Geneviève';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/genevieve_2.jpg' FROM place WHERE name = 'Bibliothèque Sainte-Geneviève';
+
+-- Lyon places
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/sucre_1.jpg' FROM place WHERE name = 'Le Sucre';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/sucre_2.jpg' FROM place WHERE name = 'Le Sucre';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/ninkasi_1.jpg' FROM place WHERE name = 'Ninkasi Gerland';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/ninkasi_2.jpg' FROM place WHERE name = 'Ninkasi Gerland';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/soda_1.jpg' FROM place WHERE name = 'Soda Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/soda_2.jpg' FROM place WHERE name = 'Soda Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/faute_1.jpg' FROM place WHERE name = 'La Faute aux Ours';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/faute_2.jpg' FROM place WHERE name = 'La Faute aux Ours';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/alibi_1.jpg' FROM place WHERE name = 'L''Alibi';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/alibi_2.jpg' FROM place WHERE name = 'L''Alibi';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/salon_1.jpg' FROM place WHERE name = 'Le Petit Salon';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/salon_2.jpg' FROM place WHERE name = 'Le Petit Salon';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/tete_1.jpg' FROM place WHERE name = 'Parc de la Tête d''Or';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/tete_2.jpg' FROM place WHERE name = 'Parc de la Tête d''Or';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/biblio_part_1.jpg' FROM place WHERE name = 'Bibliothèque de la Part-Dieu';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/biblio_part_2.jpg' FROM place WHERE name = 'Bibliothèque de la Part-Dieu';

@@ -57,7 +57,7 @@ public class UserProfileService {
         user.setLastName(userCreateDTO.getLastName());
         user.setEmail(userCreateDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
-        user.setAge(userCreateDTO.getAge());
+        user.setYearOfBirth(userCreateDTO.getYearOfBirth());
         user.setCurrentCity(userCreateDTO.getCurrentCity());
         user.setCountryOrigin(userCreateDTO.getCountryOrigin());
         user.setRoles("USER");
@@ -85,7 +85,7 @@ public class UserProfileService {
                     user.setFirstName(userUpdateDTO.getFirstName());
                     user.setLastName(userUpdateDTO.getLastName());
                     user.setEmail(userUpdateDTO.getEmail());
-                    user.setAge(userUpdateDTO.getAge());
+                    user.setYearOfBirth(userUpdateDTO.getYearOfBirth());
                     user.setCurrentCity(userUpdateDTO.getCurrentCity());
                     user.setCountryOrigin(userUpdateDTO.getCountryOrigin());
                     if (userUpdateDTO.getProfilePictureUrl() != null) {
@@ -156,6 +156,7 @@ public class UserProfileService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getAge(),
+                user.getYearOfBirth(),
                 user.getCurrentCity(),
                 user.getCountryOrigin(),
                 user.getProfilePictureUrl(),

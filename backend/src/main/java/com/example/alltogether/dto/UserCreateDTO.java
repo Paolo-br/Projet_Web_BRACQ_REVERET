@@ -22,9 +22,9 @@ public class UserCreateDTO {
             message = "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre")
     private String password;
 
-    @Min(value = 18, message = "L'âge minimum est 18 ans")
-    @Max(value = 100, message = "L'âge maximum est 100 ans")
-    private int age;
+    @Min(value = 1900, message = "L'année de naissance doit être supérieure à 1900")
+    @Max(value = 2007, message = "Vous devez avoir au moins 18 ans")
+    private int yearOfBirth;
 
     @NotBlank(message = "La ville actuelle est obligatoire")
     private String currentCity;
@@ -36,12 +36,12 @@ public class UserCreateDTO {
     public UserCreateDTO() {}
 
     public UserCreateDTO(String firstName, String lastName, String email, String password,
-                         int age, String currentCity, String countryOrigin) {
+                         int yearOfBirth, String currentCity, String countryOrigin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.age = age;
+        this.yearOfBirth = yearOfBirth;
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
     }
@@ -59,8 +59,8 @@ public class UserCreateDTO {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    public int getYearOfBirth() { return yearOfBirth; }
+    public void setYearOfBirth(int yearOfBirth) { this.yearOfBirth = yearOfBirth; }
 
     public String getCurrentCity() { return currentCity; }
     public void setCurrentCity(String currentCity) { this.currentCity = currentCity; }

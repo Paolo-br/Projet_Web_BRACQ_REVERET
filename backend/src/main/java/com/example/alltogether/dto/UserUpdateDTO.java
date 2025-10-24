@@ -16,9 +16,9 @@ public class UserUpdateDTO {
     @NotBlank(message = "L'email est obligatoire")
     private String email;
 
-    @Min(value = 18, message = "L'âge minimum est 18 ans")
-    @Max(value = 100, message = "L'âge maximum est 100 ans")
-    private Integer age;
+    @Min(value = 1900, message = "L'année de naissance doit être supérieure à 1900")
+    @Max(value = 2100, message = "L'année de naissance invalide")
+    private Integer yearOfBirth;
 
     @NotBlank(message = "La ville actuelle est obligatoire")
     private String currentCity;
@@ -31,12 +31,12 @@ public class UserUpdateDTO {
     // Constructeurs
     public UserUpdateDTO() {}
 
-    public UserUpdateDTO(String firstName, String lastName, String email, Integer age,
+    public UserUpdateDTO(String firstName, String lastName, String email, Integer yearOfBirth,
                          String currentCity, String countryOrigin, String profilePictureUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.age = age;
+        this.yearOfBirth = yearOfBirth;
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
         this.profilePictureUrl = profilePictureUrl;
@@ -52,8 +52,8 @@ public class UserUpdateDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public Integer  getAge() { return age; }
-    public void setAge(Integer  age) { this.age = age; }
+    public Integer getYearOfBirth() { return yearOfBirth; }
+    public void setYearOfBirth(Integer yearOfBirth) { this.yearOfBirth = yearOfBirth; }
 
     public String getCurrentCity() { return currentCity; }
     public void setCurrentCity(String currentCity) { this.currentCity = currentCity; }

@@ -47,6 +47,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:5173",  // Vite dev server
+            "http://localhost:5174",  // Vite dev server (port alternatif)
             "http://localhost:3000",  // React dev server (alternative)
             "http://localhost:4200"   // Angular dev server (alternative)
         ));
@@ -58,6 +59,7 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/uploads/**", configuration); // Ajouter CORS pour les images
         return source;
     }
 

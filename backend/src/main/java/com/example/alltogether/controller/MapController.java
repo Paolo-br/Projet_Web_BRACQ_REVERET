@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/map")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200"}, 
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://localhost:4200"}, 
              allowedHeaders = "*", 
              methods = {RequestMethod.GET, RequestMethod.OPTIONS})
 public class MapController {
