@@ -21,19 +21,19 @@ function CityPage() {
                 
                 // Décoder le nom de la ville depuis l'URL
                 const decodedCityName = decodeURIComponent(cityName);
-                console.log('🔍 Recherche de la ville:', decodedCityName);
+                console.log('Recherche de la ville:', decodedCityName);
 
                 // 1. Récupérer la ville par son nom directement
                 const cityUrl = API_CONFIG.ENDPOINTS.CITIES.BY_NAME(decodedCityName);
-                console.log('📡 URL appelée:', cityUrl);
+                console.log('URL appelée:', cityUrl);
 
                 const cityResponse = await fetch(cityUrl, { signal: abortController.signal });
-                console.log('📊 Statut réponse:', cityResponse.status);
-                console.log('📊 Headers:', Object.fromEntries(cityResponse.headers.entries()));
+                console.log('Statut réponse:', cityResponse.status);
+                console.log('Headers:', Object.fromEntries(cityResponse.headers.entries()));
 
                 if (!cityResponse.ok) {
                     const errorText = await cityResponse.text();
-                    console.error('❌ Erreur backend:', errorText);
+                    console.error('Erreur backend:', errorText);
                     if (cityResponse.status === 404) {
                         throw new Error(`Ville "${decodedCityName}" non trouvée (404)`);
                     }
@@ -41,31 +41,31 @@ function CityPage() {
                 }
 
                 const foundCity = await cityResponse.json();
-                console.log('✅ Ville trouvée:', foundCity);
+                console.log('Ville trouvée:', foundCity);
                 setCity(foundCity);
 
                 // 2. Récupérer les lieux de cette ville
                 const placesUrl = API_CONFIG.ENDPOINTS.PLACES.BY_CITY(foundCity.id);
-                console.log('📡 URL des lieux:', placesUrl);
+                console.log('URL des lieux:', placesUrl);
 
                 const placesResponse = await fetch(placesUrl, { signal: abortController.signal });
-                console.log('📊 Statut places:', placesResponse.status);
+                console.log('Statut places:', placesResponse.status);
                 
                 if (!placesResponse.ok) {
-                    console.warn('⚠️ Impossible de charger les lieux (erreur backend)');
+                    console.warn('Impossible de charger les lieux (erreur backend)');
                     setPlaces([]); // Continuer sans les lieux
                 } else {
                     const placesData = await placesResponse.json();
-                    console.log('📍 Lieux trouvés:', placesData.length);
+                    console.log('Lieux trouvés:', placesData.length);
                     setPlaces(placesData);
                 }
 
             } catch (err) {
                 if (err.name === 'AbortError') {
-                    console.log('🚫 Requête annulée');
+                    console.log('Requête annulée');
                     return;
                 }
-                console.error('❌ Erreur:', err);
+                console.error('Erreur:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);

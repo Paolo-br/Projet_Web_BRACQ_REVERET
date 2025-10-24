@@ -58,19 +58,19 @@ public class PlaceController {
         try {
             // Afficher les erreurs de validation
             if (bindingResult.hasErrors()) {
-                System.out.println("❌ ERREURS DE VALIDATION DTO:");
+                System.out.println("ERREURS DE VALIDATION DTO:");
                 bindingResult.getFieldErrors().forEach(error -> {
                     System.out.println(" - " + error.getField() + ": " + error.getDefaultMessage() + " (valeur: " + error.getRejectedValue() + ")");
                 });
                 return ResponseEntity.badRequest().body("Erreurs de validation: " + bindingResult.getAllErrors());
             }
 
-            System.out.println("✅ DTO VALIDÉ - Passage au service");
+            System.out.println("DTO VALIDÉ - Passage au service");
             PlaceDTO createdPlace = placeService.createPlace(placeCreateDTO);
             return ResponseEntity.ok(createdPlace);
 
         } catch (Exception e) {
-            System.out.println("❌ EXCEPTION dans createPlace: " + e.getMessage());
+            System.out.println("EXCEPTION dans createPlace: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
         }

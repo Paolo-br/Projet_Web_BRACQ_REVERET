@@ -10,7 +10,6 @@ public class StaticResourceConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Map URL /uploads/** to the uploads folder inside the project so static files are served
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:src/main/resources/static/uploads/")
                 .setCachePeriod(3600);

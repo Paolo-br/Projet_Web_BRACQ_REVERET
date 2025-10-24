@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Logo from "../assets/Logo.png";
@@ -44,7 +43,7 @@ function Navbar() {
         padding: "10px 20px",
         backgroundColor: "#f5f5f5",
         borderBottom: "1px solid #ddd",
-        position: "fixed",   // 🔹 fixé en haut
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,

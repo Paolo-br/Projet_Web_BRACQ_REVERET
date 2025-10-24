@@ -34,13 +34,13 @@ public class StaticImageController {
             }
 
             if (resource == null || !resource.exists()) {
-                System.out.println("❌ Image non trouvée: uploads/" + filename);
+                System.out.println("Image non trouvée: uploads/" + filename);
                 return ResponseEntity.notFound().build();
             }
 
-            System.out.println("✅ Image trouvée: uploads/" + filename);
+            System.out.println("Image trouvée: uploads/" + filename);
 
-            // Déterminer le type MIME en fonction de l'extension
+            // Déterminer le type
             String contentType = getContentType(filename);
 
             return ResponseEntity.ok()
@@ -49,7 +49,7 @@ public class StaticImageController {
                     .body(resource);
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors du chargement de l'image: " + e.getMessage());
+            System.err.println("Erreur lors du chargement de l'image: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -60,11 +60,11 @@ public class StaticImageController {
             Resource resource = new ClassPathResource("uploads/places/" + filename);
             
             if (!resource.exists()) {
-                System.out.println("❌ Image place non trouvée: uploads/places/" + filename);
+                System.out.println("Image place non trouvée: uploads/places/" + filename);
                 return ResponseEntity.notFound().build();
             }
 
-            System.out.println("✅ Image place trouvée: uploads/places/" + filename);
+            System.out.println("Image place trouvée: uploads/places/" + filename);
 
             String contentType = getContentType(filename);
 

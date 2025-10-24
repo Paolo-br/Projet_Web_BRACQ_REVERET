@@ -81,7 +81,6 @@ public class GlobalExceptionHandler {
 
     /**
      * Gestion spécifique de ResourceNotFoundException - HTTP 404
-     * IMPORTANT: Ce handler doit être AVANT le handler RuntimeException générique
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
