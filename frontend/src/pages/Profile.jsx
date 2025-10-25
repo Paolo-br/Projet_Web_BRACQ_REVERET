@@ -8,9 +8,12 @@ function Profile() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState("");
   const [profile, setProfile] = useState(null);
+  const [originalProfile, setOriginalProfile] = useState(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [participations, setParticipations] = useState([]);
+  const [cities, setCities] = useState([]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -29,11 +32,33 @@ function Profile() {
       try {
         const data = await userService.getMyProfile();
         setProfile(data);
+        setOriginalProfile(data);
         // charger participations
         const parts = await userService.getParticipations(data.id);
         setParticipations(parts);
       } catch (e) {
         console.error('Erreur chargement profil', e);
+      }
+    })();
+
+    // Charger les villes
+    (async () => {
+      try {
+        const url = API_CONFIG.ENDPOINTS.CITIES.ALL;
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) {
+          console.warn('Chargement des villes: réponse non OK', res.status);
+          return;
+        }
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          console.warn('Chargement des villes: content-type inattendu', contentType);
+          return;
+        }
+        const list = await res.json();
+        setCities(list || []);
+      } catch (e) {
+        console.error('Impossible de charger les villes', e);
       }
     })();
   }, [navigate]);
@@ -43,6 +68,43 @@ function Profile() {
     navigate("/");
     // Recharger pour mettre à jour la navbar
     window.location.reload();
+  };
+
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+  const handleCancel = () => {
+    // Restaurer les valeurs originales
+    setProfile({ ...originalProfile });
+    setEditing(false);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updated = await userService.updateMyProfile({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email,
+        yearOfBirth: profile.yearOfBirth,
+        currentCity: profile.currentCity,
+        countryOrigin: profile.countryOrigin,
+        profilePictureUrl: profile.profilePictureUrl
+      });
+      setProfile(updated);
+      setOriginalProfile(updated);
+      setEditing(false);
+    } catch (err) {
+      alert('Erreur lors de la sauvegarde');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setProfile({ ...profile, [field]: value });
   };
 
   return (
@@ -145,35 +207,317 @@ function Profile() {
             <p>Chargement...</p>
           ) : (
             <div>
-              <p style={{ margin: "5px 0", color: "#555" }}><strong>Nom :</strong> {profile.firstName} {profile.lastName}</p>
-              <p style={{ margin: "5px 0", color: "#555" }}><strong>Email :</strong> {profile.email}</p>
-              <p style={{ margin: "5px 0", color: "#555" }}><strong>Age :</strong> {profile.age}</p>
-              <p style={{ margin: "5px 0", color: "#555" }}><strong>Ville :</strong> {profile.currentCity}</p>
-              <p style={{ margin: "5px 0", color: "#555" }}><strong>Origine :</strong> {profile.countryOrigin}</p>
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Prénom :</strong>
+                {editing ? (
+                  <input 
+                    type="text" 
+                    value={profile.firstName || ''} 
+                    onChange={(e) => handleChange('firstName', e.target.value)}
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.firstName}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Nom :</strong>
+                {editing ? (
+                  <input 
+                    type="text" 
+                    value={profile.lastName || ''} 
+                    onChange={(e) => handleChange('lastName', e.target.value)}
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.lastName}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Email :</strong>
+                {editing ? (
+                  <input 
+                    type="email" 
+                    value={profile.email || ''} 
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.email}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Age :</strong>
+                {editing ? (
+                  <input 
+                    type="number" 
+                    min="1900"
+                    max="2007"
+                    value={profile.yearOfBirth || ''} 
+                    onChange={(e) => handleChange('yearOfBirth', e.target.value)}
+                    placeholder="Année de naissance"
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.age}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Ville :</strong>
+                {editing ? (
+                  <select 
+                    value={profile.currentCity || ''} 
+                    onChange={(e) => handleChange('currentCity', e.target.value)}
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  >
+                    <option value="">-- Choisir une ville --</option>
+                    {cities.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.currentCity}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Origine :</strong>
+                {editing ? (
+                  <input 
+                    type="text" 
+                    value={profile.countryOrigin || ''} 
+                    onChange={(e) => handleChange('countryOrigin', e.target.value)}
+                    style={{ 
+                      padding: "6px 10px", 
+                      border: "1px solid #ccc", 
+                      borderRadius: "4px", 
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.countryOrigin}</span>
+                )}
+              </div>
             </div>
           )}
         </div>
 
         <div style={{ display:'flex', gap:10 }}>
-          <button onClick={() => setEditing(!editing)} style={{ padding:8 }}>{editing ? 'Annuler' : 'Modifier mon profil'}</button>
-          <button onClick={handleLogout} style={{ padding:8, background:'#dc3545', color:'#fff', border:'none', borderRadius:6 }}>Se déconnecter</button>
+          {!editing ? (
+            <>
+              <button 
+                onClick={handleEdit} 
+                style={{ 
+                  padding: "8px 16px",
+                  backgroundColor: "#646cff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#4e53d6"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#646cff"}
+              >
+                Modifier mon profil
+              </button>
+              <button 
+                onClick={handleLogout} 
+                style={{ 
+                  padding: "8px 16px", 
+                  background: "#dc3545", 
+                  color: "#fff", 
+                  border: "none", 
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#c82333"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#dc3545"}
+              >
+                Se déconnecter
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={handleSave}
+                disabled={saving}
+                style={{ 
+                  padding: "8px 16px",
+                  backgroundColor: saving ? "#ccc" : "#28a745",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: saving ? "not-allowed" : "pointer",
+                  fontSize: "14px"
+                }}
+                onMouseEnter={(e) => {
+                  if (!saving) e.currentTarget.style.backgroundColor = "#218838";
+                }}
+                onMouseLeave={(e) => {
+                  if (!saving) e.currentTarget.style.backgroundColor = "#28a745";
+                }}
+              >
+                {saving ? "Sauvegarde..." : "Sauvegarder"}
+              </button>
+              <button 
+                onClick={handleCancel}
+                disabled={saving}
+                style={{ 
+                  padding: "8px 16px",
+                  backgroundColor: saving ? "#ccc" : "#6c757d",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: saving ? "not-allowed" : "pointer",
+                  fontSize: "14px"
+                }}
+                onMouseEnter={(e) => {
+                  if (!saving) e.currentTarget.style.backgroundColor = "#5a6268";
+                }}
+                onMouseLeave={(e) => {
+                  if (!saving) e.currentTarget.style.backgroundColor = "#6c757d";
+                }}
+              >
+                Annuler
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {editing && profile && (
-        <EditProfileForm profile={profile} onSaved={(p) => { setProfile(p); setEditing(false); }} onCancel={() => setEditing(false)} />
-      )}
 
-      <div style={{ marginTop:30 }}>
-        <h3>Mes participations</h3>
+      {/* Historique des participations */}
+      <div style={{ marginTop: "30px" }}>
+        <h3 style={{ color: "#333", marginBottom: "15px" }}>
+          📍 Historique de mes participations
+        </h3>
+        
         {participations.length === 0 ? (
-          <p>Aucune participation trouvée</p>
+          <div 
+            style={{ 
+              padding: "20px", 
+              backgroundColor: "#f8f9fa", 
+              borderRadius: "6px",
+              textAlign: "center",
+              color: "#6c757d"
+            }}
+          >
+            <p style={{ margin: 0 }}>Aucune participation enregistrée pour le moment.</p>
+            <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>
+              Cliquez sur "J'y vais aujourd'hui" sur un lieu pour commencer !
+            </p>
+          </div>
         ) : (
-          <ul>
-            {participations.map(p => (
-              <li key={p.id}>{p.placeName} — {p.participationDate}</li>
-            ))}
-          </ul>
+          <div 
+            style={{ 
+              border: "1px solid #ddd", 
+              borderRadius: "6px",
+              overflow: "hidden"
+            }}
+          >
+            {/* En-tête du tableau */}
+            <div 
+              style={{ 
+                display: "grid",
+                gridTemplateColumns: "1fr auto",
+                backgroundColor: "#646cff",
+                color: "#fff",
+                padding: "12px 15px",
+                fontWeight: "bold",
+                fontSize: "14px"
+              }}
+            >
+              <div>Lieu</div>
+              <div style={{ textAlign: "right" }}>Date</div>
+            </div>
+
+            {/* Corps du tableau avec scroll */}
+            <div 
+              style={{ 
+                maxHeight: "300px",
+                overflowY: "auto",
+                backgroundColor: "#fff"
+              }}
+            >
+              {participations.map((p, index) => (
+                <div
+                  key={p.id}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    padding: "12px 15px",
+                    borderBottom: index < participations.length - 1 ? "1px solid #e9ecef" : "none",
+                    transition: "background-color 0.2s",
+                    backgroundColor: index % 2 === 0 ? "#fff" : "#f8f9fa"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e7f1ff"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f8f9fa"}
+                >
+                  <div style={{ color: "#333", fontWeight: "500" }}>
+                    {p.placeName || "Lieu inconnu"}
+                  </div>
+                  <div style={{ color: "#6c757d", fontSize: "14px", textAlign: "right" }}>
+                    {p.participationDate ? new Date(p.participationDate).toLocaleDateString('fr-FR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    }) : "Date inconnue"}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer avec compteur */}
+            <div 
+              style={{ 
+                padding: "10px 15px",
+                backgroundColor: "#f8f9fa",
+                borderTop: "1px solid #ddd",
+                fontSize: "13px",
+                color: "#6c757d",
+                textAlign: "center"
+              }}
+            >
+              {participations.length} participation{participations.length > 1 ? 's' : ''} au total
+            </div>
+          </div>
         )}
       </div>
 
@@ -183,76 +527,3 @@ function Profile() {
 }
 
 export default Profile;
-
-function EditProfileForm({ profile, onSaved, onCancel }) {
-  const [form, setForm] = useState({
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    email: profile.email,
-    yearOfBirth: profile.yearOfBirth,
-    currentCity: profile.currentCity,
-    countryOrigin: profile.countryOrigin,
-    profilePictureUrl: profile.profilePictureUrl
-  });
-  const [saving, setSaving] = useState(false);
-  const [cities, setCities] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        // Utiliser la constante API_CONFIG pour pointer vers le backend
-        const url = API_CONFIG.ENDPOINTS.CITIES.ALL;
-        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-        if (!res.ok) {
-          console.warn('Chargement des villes: réponse non OK', res.status);
-          return;
-        }
-        // Défensive: si le serveur retourne HTML (ex: index.html), éviter JSON.parse error
-        const contentType = res.headers.get('content-type') || '';
-        if (!contentType.includes('application/json')) {
-          console.warn('Chargement des villes: content-type inattendu', contentType);
-          return;
-        }
-        const list = await res.json();
-        setCities(list || []);
-      } catch (e) {
-        console.error('Impossible de charger les villes', e);
-      }
-    })();
-  }, []);
-
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const updated = await userService.updateMyProfile(form);
-      onSaved(updated);
-    } catch (err) {
-      alert('Erreur sauvegarde');
-    } finally { setSaving(false); }
-  };
-
-  return (
-    <div style={{ padding:15, background:'#fafafa', borderRadius:6 }}>
-      <div style={{ display:'grid', gap:8 }}>
-        <input name="firstName" placeholder="Prénom" value={form.firstName} onChange={handleChange} />
-        <input name="lastName" placeholder="Nom" value={form.lastName} onChange={handleChange} />
-        <input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
-        <input name="yearOfBirth" type="number" placeholder="Année de naissance" min="1900" max="2007" value={form.yearOfBirth} onChange={handleChange} />
-        {/* currentCity select populated from backend */}
-        <select name="currentCity" value={form.currentCity} onChange={handleChange}>
-          <option value="">-- Choisir une ville --</option>
-          {cities.map((c) => (
-            <option key={c.id} value={c.name}>{c.name}</option>
-          ))}
-        </select>
-        <input name="countryOrigin" value={form.countryOrigin} onChange={handleChange} />
-      </div>
-      <div style={{ display:'flex', gap:8, marginTop:10 }}>
-        <button onClick={handleSave} disabled={saving}>{saving ? 'Sauvegarde...' : 'Sauvegarder'}</button>
-        <button onClick={onCancel}>Annuler</button>
-      </div>
-    </div>
-  );
-}
