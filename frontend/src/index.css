@@ -74,3 +74,27 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Styles pour les tooltips Leaflet */
+.leaflet-tooltip {
+  background-color: white !important;
+  border: 2px solid #007bff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  padding: 8px 12px !important;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+}
+
+.leaflet-tooltip::before {
+  border-top-color: #007bff !important;
+}
+
+/* Animation au survol */
+.leaflet-marker-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.leaflet-marker-icon:hover {
+  transform: scale(1.1);
+  z-index: 1000 !important;
+}

@@ -123,14 +123,14 @@ INSERT INTO place (name, category, address, description, opening_hours, latitude
 ('Le Brick', 'BAR', '10 Rue Kervegan', 'Bar étudiant convivial', NULL, 47.2180, -1.5562, 8),
 ('Le McCarthy''s', 'BAR', '8 Rue de la Fosse', 'Pub/bar étudiant', NULL, 47.2185, -1.5535, 8),
 ('Le Warehouse', 'BOITE_DE_NUIT', '21 Quai des Antilles', 'Club électro réputé sur l''île de Nantes', NULL, 47.2032, -1.5680, 8),
-('Jardin des Plantes', 'PARC', 'Rue Stanislas Baudry', 'Grand jardin botanique en plein centre', NULL, 47.2203, -1.5416, 8),
+('Jardin des Plantes de Nantes', 'PARC', 'Rue Stanislas Baudry', 'Grand jardin botanique en plein centre', NULL, 47.2203, -1.5416, 8),
 ('Médiathèque Jacques Demy', 'BIBLIOTHEQUE', '24 Quai de la Fosse', 'Bibliothèque municipale centrale', NULL, 47.2138, -1.5632, 8)
 ON CONFLICT (name) DO NOTHING;
 
 -- Montpellier (city_id = 9)
 INSERT INTO place (name, category, address, description, opening_hours, latitude, longitude, city_id) VALUES
 ('Le Rockstore', 'BAR', '12 Rue de l''Université', 'Bar étudiant animé avec concerts', NULL, 43.6110, 3.8770, 9),
-('Le Black Sheep', 'BAR', '8 Rue des Écoles', 'Bar étudiant convivial', NULL, 43.6105, 3.8785, 9),
+('Black Sheep ', 'BAR', '8 Rue des Écoles', 'Bar étudiant convivial', NULL, 43.6105, 3.8785, 9),
 ('Le Bistrot des Arts', 'BAR', '5 Rue du Palais des Guilhem', 'Bar étudiant culturel', NULL, 43.6102, 3.8790, 9),
 ('Le Factory', 'BAR', '14 Rue Jean Jacques Rousseau', 'Bar étudiant avec bonne ambiance', NULL, 43.6115, 3.8775, 9),
 ('Le Saint-Roch', 'BAR', '20 Rue Saint-Roch', 'Bar étudiant central et animé', NULL, 43.6120, 3.8760, 9),
@@ -143,7 +143,7 @@ ON CONFLICT (name) DO NOTHING;
 INSERT INTO place (name, category, address, description, opening_hours, latitude, longitude, city_id) VALUES
 ('Le Grincheux', 'BAR', '12 Rue du Vieux Marché aux Poissons', 'Bar étudiant avec ambiance conviviale', NULL, 48.5830, 7.7500, 10),
 ('Le Café Brant', 'BAR', '5 Rue Brant', 'Bar étudiant central', NULL, 48.5840, 7.7515, 10),
-('Le Black Sheep', 'BAR', '3 Rue des Juifs', 'Bar étudiant animé', NULL, 48.5825, 7.7530, 10),
+('Code Bar', 'BAR', '39 Rue du Vieil-Hôpital', 'Bar étudiant animé', NULL, 48.5807, 7.7501, 10),
 ('Le Molodoï', 'BAR', '1 Rue du Général Rapp', 'Bar étudiant culturel et concerts', NULL, 48.5845, 7.7540, 10),
 ('Le Campus Café', 'BAR', '8 Rue de la Nuée Bleue', 'Bar étudiant proche université', NULL, 48.5835, 7.7520, 10),
 ('La Salamandre', 'BOITE_DE_NUIT', '3 Rue Paul Janet', 'Boîte de nuit emblématique à Strasbourg', NULL, 48.5819, 7.7473, 10),

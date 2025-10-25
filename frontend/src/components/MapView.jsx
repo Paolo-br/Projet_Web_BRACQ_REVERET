@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -18,8 +18,13 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function MapView({ cities }) {
+function MapView({ cities, places = [] }) {
   const navigate = useNavigate();
+
+  // Calculer le nombre de lieux par ville
+  const getPlaceCountByCity = (cityId) => {
+    return places.filter(place => place.cityId === cityId).length;
+  };
 
   // Calcul du centre de la carte basé sur les villes disponibles
   const getMapCenter = () => {
@@ -72,40 +77,71 @@ function MapView({ cities }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {cities.map((city) => (
-          <Marker
-            key={city.id}
-            position={[city.latitude, city.longitude]}
-            eventHandlers={{
-              click: () => handleMarkerClick(city.name)
-            }}
-          >
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>{city.name}</h3>
-                <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#666' }}>
-                  {city.description || `Découvrez ${city.name} !`}
-                </p>
-                <button
-                  onClick={() => handleMarkerClick(city.name)}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-                >
-                  Voir la ville
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        {cities.map((city) => {
+          const placeCount = getPlaceCountByCity(city.id);
+          
+          return (
+            <Marker
+              key={city.id}
+              position={[city.latitude, city.longitude]}
+              eventHandlers={{
+                click: () => handleMarkerClick(city.name)
+              }}
+            >
+              <Tooltip 
+                direction="top" 
+                offset={[0, -40]}
+                opacity={0.9}
+                permanent={false}
+              >
+                <div style={{ 
+                  textAlign: 'center',
+                  padding: '2px 4px',
+                  minWidth: '120px'
+                }}>
+                  <strong style={{ 
+                    fontSize: '0.95rem',
+                    display: 'block',
+                    marginBottom: '2px'
+                  }}>
+                    {city.name}
+                  </strong>
+                  <span style={{ 
+                    fontSize: '0.85rem',
+                    color: '#555'
+                  }}>
+                    {placeCount} {placeCount <= 1 ? 'lieu' : 'lieux'}
+                  </span>
+                </div>
+              </Tooltip>
+              
+              <Popup>
+                <div style={{ textAlign: 'center' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>{city.name}</h3>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#666' }}>
+                    {city.description || `Découvrez ${city.name} !`}
+                  </p>
+                  <button
+                    onClick={() => handleMarkerClick(city.name)}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                  >
+                    Voir la ville
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );

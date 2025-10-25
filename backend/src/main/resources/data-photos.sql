@@ -105,7 +105,7 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/lucif
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/sherlock_1.jpg' FROM place WHERE name = 'Le Sherlock Holmes';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/sherlock_2.jpg' FROM place WHERE name = 'Le Sherlock Holmes';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/comtesse_1.jpg' FROM place WHERE name = 'La Comtesse';
-INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/comtesse.jpg' FROM place WHERE name = 'La Comtesse';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/comtesse_2.jpg' FROM place WHERE name = 'La Comtesse';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/theatro_1.jpg' FROM place WHERE name = 'Le Theatro';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/theatro_2.jpg' FROM place WHERE name = 'Le Theatro';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/jardin_public_1.jpg' FROM place WHERE name = 'Jardin Public';
@@ -115,7 +115,22 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/bibli
 -- =====================================
 -- LILLE (city_id = 6)
 -- =====================================
--- TODO: Ajouter les photos de Lille
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/dandy_1.jpg' FROM place WHERE name = 'Le Dandy';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/dandy_2.jpg' FROM place WHERE name = 'Le Dandy';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/kremlin_1.jpg' FROM place WHERE name = 'Le Kremlin';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/kremlin_2.jpg' FROM place WHERE name = 'Le Kremlin';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/tripostal_1.jpg' FROM place WHERE name = 'Le Tripostal Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/tripostal_2.jpg' FROM place WHERE name = 'Le Tripostal Bar';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/capsule_1.jpg' FROM place WHERE name = 'La Capsule';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/capsule_1.jpg' FROM place WHERE name = 'La Capsule';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/pirogue_1.jpg' FROM place WHERE name = 'La Pirogue';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/pirogue_1.jpg' FROM place WHERE name = 'La Pirogue';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/network_1.jpg' FROM place WHERE name = 'Network Club';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/network_2.jpg' FROM place WHERE name = 'Network Club';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/parc_citadelle_1.jpg' FROM place WHERE name = 'Parc de la Citadelle';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/parc_citadelle_2.jpg' FROM place WHERE name = 'Parc de la Citadelle';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/media_jean_1.jpg' FROM place WHERE name = 'Médiathèque Jean-Lévy';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/media_jean_2.jpg' FROM place WHERE name = 'Médiathèque Jean-Lévy';
 
 -- =====================================
 -- NICE (city_id = 7)

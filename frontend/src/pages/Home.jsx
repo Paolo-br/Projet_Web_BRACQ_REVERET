@@ -127,7 +127,7 @@ function Home() {
             Chargement de la carte...
           </div>
         ) : cities.length > 0 ? (
-          <MapView cities={cities} />
+          <MapView cities={cities} places={places} />
         ) : (
           <div
             style={{
