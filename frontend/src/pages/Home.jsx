@@ -114,7 +114,7 @@ function Home() {
           <div
             style={{
               width: "100%",
-              height: "400px",
+              height: "500px",
               border: "2px dashed #aaa",
               borderRadius: "12px",
               display: "flex",
@@ -132,7 +132,7 @@ function Home() {
           <div
             style={{
               width: "100%",
-              height: "400px",
+              height: "500px",
               border: "2px dashed #aaa",
               borderRadius: "12px",
               display: "flex",

@@ -40,28 +40,25 @@ function Navbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "10px 20px",
+        padding: "15px 20px",
         backgroundColor: "#f5f5f5",
         borderBottom: "1px solid #ddd",
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
-        height: "60px",
+        height: "80px",
         zIndex: 1000
       }}
     >
-      {/* Logo + Accueil */}
-      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+      {/* Logo */}
+      <div style={{ display: "flex", alignItems: "center" }}>
         <img 
           src={Logo}
           alt="Logo" 
-          style={{ height: "80px", cursor: "pointer" }} 
+          style={{ height: "100px", cursor: "pointer" }} 
           onClick={() => window.location.href = "/"} 
         />
-        <Link to="/" style={{ textDecoration: "none", fontWeight: "bold", color: "#333" }}>
-          Accueil
-        </Link>
       </div>
 
       {/* Boutons à droite */}
