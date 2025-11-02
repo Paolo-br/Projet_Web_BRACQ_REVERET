@@ -2,13 +2,17 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API_CONFIG from "../config/apiConfig";
+import QuickFilters from "../components/QuickFilters";
+import PlaceBubble from "../components/PlaceBubble";
 
 function CityPage() {
   const { cityName } = useParams();
   const [city, setCity] = useState(null);
   const [places, setPlaces] = useState([]);
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
 
   useEffect(() => {
@@ -53,11 +57,13 @@ function CityPage() {
                 
                 if (!placesResponse.ok) {
                     console.warn('Impossible de charger les lieux (erreur backend)');
-                    setPlaces([]); // Continuer sans les lieux
+          setPlaces([]); // Continuer sans les lieux
+          setFilteredPlaces([]);
                 } else {
                     const placesData = await placesResponse.json();
                     console.log('Lieux trouvés:', placesData.length);
-                    setPlaces(placesData);
+          setPlaces(placesData);
+          setFilteredPlaces(placesData);
                 }
 
             } catch (err) {
@@ -77,6 +83,16 @@ function CityPage() {
         // Cleanup : annule la requête si le composant est démonté
         return () => abortController.abort();
     }, [cityName]);
+
+  // Gestion du filtrage par catégorie (réutilise le même comportement que sur la page d'accueil)
+  const handleCategoryFilter = (category) => {
+    setSelectedCategory(category || '');
+    if (!category) {
+      setFilteredPlaces(places);
+    } else {
+      setFilteredPlaces(places.filter((p) => p.category === category));
+    }
+  };
 
   if (loading) {
     return <h2 style={{ marginTop: "80px", textAlign: "center" }}>Chargement...</h2>;
@@ -146,51 +162,40 @@ function CityPage() {
       {/* Liste des lieux */}
       <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 20px" }}>
         <h2 style={{ marginBottom: "20px" }}>Lieux à {city.name}</h2>
+        {/* Filtres rapides (comme sur la page d'accueil) */}
+        <div style={{ marginBottom: '20px' }}>
+            <QuickFilters
+              places={places}
+              selectedCategory={selectedCategory}
+              onCategorySelect={(cat) => handleCategoryFilter(cat)}
+            />
 
-        {places.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#888" }}>
-            Aucun lieu disponible pour cette ville pour le moment.
-          </p>
-        ) : (
-          places.map((place) => (
-            <div
-              key={place.id}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+            <button
+              onClick={() => handleCategoryFilter('')}
               style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "15px",
-                marginBottom: "15px",
-                backgroundColor: "#fff",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: selectedCategory === '' ? '#007bff' : '#e9ecef',
+                color: selectedCategory === '' ? '#fff' : '#333',
+                cursor: 'pointer'
               }}
             >
-              <h3 style={{ 
-                margin: "0 0 10px 0",
-                color: "#333",
-                fontSize: "1.3rem",
-                fontWeight: "bold"
-              }}>
-                {place.name}
-              </h3>
-              <p style={{ margin: "5px 0", color: "#555" }}>
-                <strong>Type:</strong> {place.category}
-              </p>
-              {place.description && (
-                <p style={{ margin: "10px 0", color: "#666" }}>{place.description}</p>
-              )}
-              {place.address && (
-                <p style={{ margin: "5px 0", color: "#888", fontSize: "0.9rem" }}>
-                  📍 {place.address}
-                </p>
-              )}
-              {place.participationCount !== undefined && (
-                <p style={{ margin: "10px 0", color: "#007bff", fontWeight: "bold" }}>
-                  👥 {place.participationCount} personne(s) y va(ont) aujourd'hui
-                </p>
-              )}
-            </div>
-          ))
-        )}
+              Tous les lieux ({places.length})
+            </button>
+          </div>
+
+          {filteredPlaces.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#888" }}>
+              Aucun lieu disponible pour cette ville pour le moment.
+            </p>
+          ) : (
+            filteredPlaces.map((place) => (
+              <PlaceBubble key={place.id} place={place} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

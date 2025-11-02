@@ -52,7 +52,7 @@ class PlaceServiceTest {
 
         placeDTO = new PlaceDTO();
         placeDTO.setName("Tour Eiffel");
-        placeDTO.setCategory("MONUMENT");
+        placeDTO.setCategory("MONUMENT_HISTORIQUE");
         placeDTO.setAddress("Champ de Mars, Paris");
         placeDTO.setDescription("Monument emblématique");
         placeDTO.setCityId(1L);
@@ -70,7 +70,7 @@ class PlaceServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals("Tour Eiffel", result.getName());
-        assertEquals("MONUMENT", result.getCategory());
+    assertEquals("MONUMENT_HISTORIQUE", result.getCategory());
         verify(placeRepository, times(1)).save(any(Place.class));
     }
 
