@@ -36,6 +36,7 @@ public class ParticipationService {
     }
 
     // GET: Retourne une liste de ParticipationDTO
+    @Transactional(readOnly = true)
     public List<ParticipationDTO> getAllParticipations() {
         return participationRepository.findAll().stream()
                 .map(this::toDTO)
@@ -43,12 +44,14 @@ public class ParticipationService {
     }
 
     // GET: Retourne un Optional<ParticipationDTO>
+    @Transactional(readOnly = true)
     public Optional<ParticipationDTO> getParticipationById(Long id) {
         return participationRepository.findById(id)
                 .map(this::toDTO);
     }
 
     // GET: Retourne une liste de ParticipationDTO par userId
+    @Transactional(readOnly = true)
     public List<ParticipationDTO> getParticipationsByUserId(Long userId) {
         return participationRepository.findByUserId(userId).stream()
                 .map(this::toDTO)
@@ -56,6 +59,7 @@ public class ParticipationService {
     }
 
     // GET: Retourne une liste de ParticipationDTO par placeId
+    @Transactional(readOnly = true)
     public List<ParticipationDTO> getParticipationsByPlaceId(Long placeId) {
         return participationRepository.findByPlaceId(placeId).stream()
                 .map(this::toDTO)
@@ -63,6 +67,7 @@ public class ParticipationService {
     }
 
     // GET: Récupérer les participations d'un utilisateur pour une date spécifique
+    @Transactional(readOnly = true)
     public List<ParticipationDTO> getParticipationsByUserIdAndDate(Long userId, LocalDate date) {
         return participationRepository.findByUserIdAndParticipationDate(userId, date).stream()
                 .map(this::toDTO)
@@ -75,6 +80,7 @@ public class ParticipationService {
     }
 
     // PUT: Mettre à jour une participation existante
+    @Transactional
     public Optional<ParticipationDTO> updateParticipation(Long id, ParticipationStatus newStatus) {
         return participationRepository.findById(id)
                 .map(participation -> {
@@ -99,12 +105,24 @@ public class ParticipationService {
         return !participationRepository.existsByUserIdAndPlaceIdAndParticipationDate(userId, placeId, date);
     }
 
+    // Récupérer la participation active d'un utilisateur pour un lieu aujourd'hui
+    @Transactional(readOnly = true)
+    public Optional<ParticipationDTO> getUserParticipationForPlaceToday(Long userId, Long placeId) {
+        LocalDate today = LocalDate.now();
+        return participationRepository.findByUserIdAndPlaceIdAndParticipationDate(userId, placeId, today)
+                .filter(p -> p.getStatus() == com.example.alltogether.model.Participation.ParticipationStatus.INSCRIT)
+                .map(this::toDTO);
+    }
+
     // Conversion Entity → DTO
     public ParticipationDTO toDTO(Participation participation) {
         return new ParticipationDTO(
                 participation.getId(),
                 participation.getUser().getId(),
                 participation.getUser().getFirstName() + " " + participation.getUser().getLastName(),
+                participation.getUser().getFirstName(),
+                participation.getUser().getLastName(),
+                participation.getUser().getEmail(),
                 participation.getPlace().getId(),
                 participation.getPlace().getName(),
                 participation.getParticipationDate(),
@@ -112,6 +130,7 @@ public class ParticipationService {
                 ParticipationStatus.valueOf(participation.getStatus().name())
         );
     }
+    @Transactional
     public ParticipationDTO createParticipation(Long userId, Long placeId, ParticipationStatus status, LocalDate participationDate) {
         // AJOUTER DU LOGGING POUR DIAGNOSTIQUER
         System.out.println("=== DEBUG CREATE PARTICIPATION ===");

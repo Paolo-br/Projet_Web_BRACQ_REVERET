@@ -39,7 +39,7 @@ const userService = {
   },
 
   async getParticipations(userId) {
-    const res = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATION.BY_USER(userId), {
+    const res = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.BY_USER(userId), {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Impossible de récupérer les participations');

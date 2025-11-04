@@ -105,4 +105,14 @@ public class ParticipationController {
         participationService.deleteParticipation(id);
         return ResponseEntity.noContent().build();
     }
+
+    // GET /api/participations/user/{userId}/place/{placeId}/today
+    @GetMapping("/user/{userId}/place/{placeId}/today")
+    public ResponseEntity<ParticipationDTO> getUserParticipationForPlaceToday(
+            @PathVariable Long userId,
+            @PathVariable Long placeId) {
+        return participationService.getUserParticipationForPlaceToday(userId, placeId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

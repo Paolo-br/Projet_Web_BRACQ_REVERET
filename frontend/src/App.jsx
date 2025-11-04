@@ -7,19 +7,24 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import CityPage from "./pages/CityPage";
+import PlacePage from "./pages/PlacePage";
+import { ParticipationProvider } from "./contexts/ParticipationContext";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/city/:cityName" element={<CityPage />} />
-        <Route path="/activities" element={<Activities />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <ParticipationProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/city/:cityName" element={<CityPage />} />
+          <Route path="/place/:placeId" element={<PlacePage />} />
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </ParticipationProvider>
     </BrowserRouter>
   );
 }

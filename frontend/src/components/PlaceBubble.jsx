@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API_CONFIG from '../config/apiConfig';
 import HoverCarousel from './HoverCarousel';
 
 export default function PlaceBubble({ place, hoverDelay = 200 }) {
+  const navigate = useNavigate();
   const [showCarousel, setShowCarousel] = useState(false);
   const hoverTimer = useRef(null);
 
@@ -34,6 +36,7 @@ export default function PlaceBubble({ place, hoverDelay = 200 }) {
 
   return (
     <div
+      onClick={() => navigate(`/place/${place.id}`)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -45,7 +48,17 @@ export default function PlaceBubble({ place, hoverDelay = 200 }) {
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
         display: 'flex',
         gap: '16px',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        cursor: 'pointer',
+        transition: 'transform 0.2s, box-shadow 0.2s'
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
       }}
     >
   {/* Colonne image à gauche (agrandie pour être quasi aussi large que l'onglet) */}

@@ -48,12 +48,30 @@ export const authService = {
 
     const data = await response.json();
 
-    // Stocker le token et les infos utilisateur
+    // Stocker le token
     if (data.token) {
       sessionStorage.setItem('jwt_token', data.token);
       sessionStorage.setItem('user_email', email);
-      // Le backend ne renvoie pas les rôles dans la réponse de login
-      // On pourrait les récupérer via un endpoint /user/profile si nécessaire
+      
+      // Récupérer les informations complètes de l'utilisateur
+      try {
+        const profileResponse = await fetch(API_CONFIG.ENDPOINTS.USER.PROFILE, {
+          headers: {
+            'Authorization': `Bearer ${data.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (profileResponse.ok) {
+          const userProfile = await profileResponse.json();
+          // Stocker l'objet utilisateur complet avec l'id
+          sessionStorage.setItem('user', JSON.stringify(userProfile));
+        } else {
+          console.error('Erreur lors de la récupération du profil, statut:', profileResponse.status);
+        }
+      } catch (err) {
+        console.error('Erreur lors de la récupération du profil:', err);
+      }
     }
 
     return data;
@@ -64,6 +82,7 @@ export const authService = {
     sessionStorage.removeItem('jwt_token');
     sessionStorage.removeItem('user_email');
     sessionStorage.removeItem('user_roles');
+    sessionStorage.removeItem('user');
   },
 
   // Vérifier si connecté

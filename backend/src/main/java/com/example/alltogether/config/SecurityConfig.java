@@ -85,6 +85,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/images/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/debug/**").permitAll()
+                        // Permettre la lecture des participations par lieu (pour afficher qui participe)
+                        .requestMatchers(HttpMethod.GET, "/api/participations/place/**").permitAll()
 
                         // Endpoints USER (lecture + participations)
                         .requestMatchers("/api/participations/**").hasAnyRole("USER", "ADMIN")

@@ -2,10 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import userService from "../services/userService";
+import { participationService } from "../services/participationService";
 import API_CONFIG from "../config/apiConfig";
+import { useParticipation } from "../contexts/ParticipationContext";
 
 function Profile() {
   const navigate = useNavigate();
+  const { participationTrigger, notifyParticipationChange } = useParticipation();
   const [userEmail, setUserEmail] = useState("");
   const [profile, setProfile] = useState(null);
   const [originalProfile, setOriginalProfile] = useState(null);
@@ -14,7 +17,18 @@ function Profile() {
   const [saving, setSaving] = useState(false);
   const [participations, setParticipations] = useState([]);
   const [cities, setCities] = useState([]);
+  const [cancelingId, setCancelingId] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Fonction pour charger les participations
+  const loadParticipations = async (userId) => {
+    try {
+      const parts = await userService.getParticipations(userId);
+      setParticipations(parts);
+    } catch (e) {
+      console.error('Erreur chargement participations', e);
+    }
+  };
 
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté
@@ -34,8 +48,7 @@ function Profile() {
         setProfile(data);
         setOriginalProfile(data);
         // charger participations
-        const parts = await userService.getParticipations(data.id);
-        setParticipations(parts);
+        await loadParticipations(data.id);
       } catch (e) {
         console.error('Erreur chargement profil', e);
       }
@@ -62,6 +75,13 @@ function Profile() {
       }
     })();
   }, [navigate]);
+
+  // Effet pour recharger les participations quand le trigger change
+  useEffect(() => {
+    if (profile && profile.id && participationTrigger > 0) {
+      loadParticipations(profile.id);
+    }
+  }, [participationTrigger, profile?.id]);
 
   const handleLogout = () => {
     authService.logout();
@@ -106,6 +126,47 @@ function Profile() {
   const handleChange = (field, value) => {
     setProfile({ ...profile, [field]: value });
   };
+
+  const handleCancelParticipation = async (participationId, placeName) => {
+    const confirmed = window.confirm(`Voulez-vous vraiment annuler votre participation à "${placeName}" ?`);
+    if (!confirmed) return;
+
+    setCancelingId(participationId);
+    try {
+      await participationService.cancelParticipation(participationId);
+      // Recharger les participations immédiatement
+      await loadParticipations(profile.id);
+      // Notifier le contexte pour mettre à jour les autres pages
+      notifyParticipationChange();
+    } catch (err) {
+      console.error('Erreur lors de l\'annulation:', err);
+      alert('Erreur lors de l\'annulation de la participation');
+    } finally {
+      setCancelingId(null);
+    }
+  };
+
+  const handleGoToPlace = (placeId) => {
+    navigate(`/place/${placeId}`);
+  };
+
+  // Filtrer les participations futures (aujourd'hui ou après)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const activeParticipations = participations.filter(p => {
+    if (!p.participationDate) return false;
+    const partDate = new Date(p.participationDate);
+    partDate.setHours(0, 0, 0, 0);
+    return partDate >= today && p.status === 'INSCRIT';
+  });
+
+  const pastParticipations = participations.filter(p => {
+    if (!p.participationDate) return false;
+    const partDate = new Date(p.participationDate);
+    partDate.setHours(0, 0, 0, 0);
+    return partDate < today || p.status !== 'INSCRIT';
+  });
 
   return (
     <div
@@ -423,13 +484,13 @@ function Profile() {
       </div>
 
 
-      {/* Historique des participations */}
+      {/* Participations actives */}
       <div style={{ marginTop: "30px" }}>
         <h3 style={{ color: "#333", marginBottom: "15px" }}>
-          📍 Historique de mes participations
+          🎯 Mes participations actives
         </h3>
         
-        {participations.length === 0 ? (
+        {activeParticipations.length === 0 ? (
           <div 
             style={{ 
               padding: "20px", 
@@ -439,16 +500,127 @@ function Profile() {
               color: "#6c757d"
             }}
           >
-            <p style={{ margin: 0 }}>Aucune participation enregistrée pour le moment.</p>
+            <p style={{ margin: 0 }}>Aucune participation active pour le moment.</p>
             <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>
               Cliquez sur "J'y vais aujourd'hui" sur un lieu pour commencer !
             </p>
           </div>
         ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {activeParticipations.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "15px",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ 
+                      fontSize: "16px", 
+                      fontWeight: "600", 
+                      color: "#333",
+                      marginBottom: "5px"
+                    }}>
+                      📍 {p.placeName || "Lieu inconnu"}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#6c757d" }}>
+                      📅 {p.participationDate ? new Date(p.participationDate).toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      }) : "Date inconnue"}
+                    </div>
+                    {p.participationDate && new Date(p.participationDate).toDateString() === new Date().toDateString() && (
+                      <div style={{ 
+                        display: "inline-block",
+                        marginTop: "8px",
+                        padding: "4px 10px",
+                        backgroundColor: "#d4edda",
+                        color: "#155724",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        fontWeight: "600"
+                      }}>
+                        🎉 Aujourd'hui !
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", marginLeft: "15px" }}>
+                    <button
+                      onClick={() => handleGoToPlace(p.placeId)}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        whiteSpace: "nowrap"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#0056b3"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#007bff"}
+                    >
+                      Voir le lieu
+                    </button>
+                    <button
+                      onClick={() => handleCancelParticipation(p.id, p.placeName)}
+                      disabled={cancelingId === p.id}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: cancelingId === p.id ? "#ccc" : "#dc3545",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: cancelingId === p.id ? "not-allowed" : "pointer",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        whiteSpace: "nowrap"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (cancelingId !== p.id) e.currentTarget.style.backgroundColor = "#c82333";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (cancelingId !== p.id) e.currentTarget.style.backgroundColor = "#dc3545";
+                      }}
+                    >
+                      {cancelingId === p.id ? "..." : "Annuler"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Historique des participations passées */}
+      {pastParticipations.length > 0 && (
+        <div style={{ marginTop: "30px" }}>
+          <h3 style={{ color: "#333", marginBottom: "15px" }}>
+            📚 Historique des participations
+          </h3>
+          
           <div 
             style={{ 
               border: "1px solid #ddd", 
-              borderRadius: "6px",
+              borderRadius: "8px",
               overflow: "hidden"
             }}
           >
@@ -456,8 +628,8 @@ function Profile() {
             <div 
               style={{ 
                 display: "grid",
-                gridTemplateColumns: "1fr auto",
-                backgroundColor: "#646cff",
+                gridTemplateColumns: "1fr auto auto",
+                backgroundColor: "#6c757d",
                 color: "#fff",
                 padding: "12px 15px",
                 fontWeight: "bold",
@@ -465,40 +637,57 @@ function Profile() {
               }}
             >
               <div>Lieu</div>
-              <div style={{ textAlign: "right" }}>Date</div>
+              <div style={{ textAlign: "center", minWidth: "100px" }}>Date</div>
+              <div style={{ textAlign: "center", minWidth: "80px" }}>Action</div>
             </div>
 
             {/* Corps du tableau avec scroll */}
             <div 
               style={{ 
-                maxHeight: "300px",
+                maxHeight: "250px",
                 overflowY: "auto",
                 backgroundColor: "#fff"
               }}
             >
-              {participations.map((p, index) => (
+              {pastParticipations.map((p, index) => (
                 <div
                   key={p.id}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr auto",
+                    gridTemplateColumns: "1fr auto auto",
                     padding: "12px 15px",
-                    borderBottom: index < participations.length - 1 ? "1px solid #e9ecef" : "none",
-                    transition: "background-color 0.2s",
+                    borderBottom: index < pastParticipations.length - 1 ? "1px solid #e9ecef" : "none",
+                    alignItems: "center",
                     backgroundColor: index % 2 === 0 ? "#fff" : "#f8f9fa"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e7f1ff"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f8f9fa"}
                 >
-                  <div style={{ color: "#333", fontWeight: "500" }}>
+                  <div style={{ color: "#6c757d", fontWeight: "500" }}>
                     {p.placeName || "Lieu inconnu"}
                   </div>
-                  <div style={{ color: "#6c757d", fontSize: "14px", textAlign: "right" }}>
+                  <div style={{ color: "#6c757d", fontSize: "13px", textAlign: "center", minWidth: "100px" }}>
                     {p.participationDate ? new Date(p.participationDate).toLocaleDateString('fr-FR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'
                     }) : "Date inconnue"}
+                  </div>
+                  <div style={{ textAlign: "center", minWidth: "80px" }}>
+                    <button
+                      onClick={() => handleGoToPlace(p.placeId)}
+                      style={{
+                        padding: "4px 10px",
+                        backgroundColor: "#6c757d",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "12px"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#5a6268"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#6c757d"}
+                    >
+                      Voir
+                    </button>
                   </div>
                 </div>
               ))}
@@ -515,11 +704,11 @@ function Profile() {
                 textAlign: "center"
               }}
             >
-              {participations.length} participation{participations.length > 1 ? 's' : ''} au total
+              {pastParticipations.length} participation{pastParticipations.length > 1 ? 's' : ''} passée{pastParticipations.length > 1 ? 's' : ''}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       
     </div>

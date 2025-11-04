@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API_CONFIG from '../config/apiConfig';
 
 export function CityCard({ city }) {
@@ -68,6 +68,8 @@ export function CityCard({ city }) {
 }
 
 export function PlaceCard({ place }) {
+  const navigate = useNavigate();
+  
   const getCategoryLabel = (category) => {
     const labels = {
       'BAR': 'Bar',
@@ -120,6 +122,7 @@ export function PlaceCard({ place }) {
 
   return (
     <div
+      onClick={() => navigate(`/place/${place.id}`)}
       style={{
         minWidth: '280px',
         maxWidth: '280px',

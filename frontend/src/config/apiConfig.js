@@ -29,10 +29,13 @@ const API_CONFIG = {
       CITIES: `${API_BASE_URL}/map/cities`,
       PLACES_BY_CITY: (cityId) => `${API_BASE_URL}/map/cities/${cityId}/places`,
     },
-    PARTICIPATION: {
+    PARTICIPATIONS: {
       ALL: `${API_BASE_URL}/participations`,
       BY_PLACE: (placeId) => `${API_BASE_URL}/participations/place/${placeId}`,
+      GET_BY_PLACE: (placeId) => `${API_BASE_URL}/participations/place/${placeId}`,
       BY_USER: (userId) => `${API_BASE_URL}/participations/user/${userId}`,
+      CREATE: `${API_BASE_URL}/participations`,
+      DELETE: (participationId) => `${API_BASE_URL}/participations/${participationId}`,
       PARTICIPATE: (placeId) => `${API_BASE_URL}/participations/${placeId}`,
     },
     USER: {
