@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: BaseD@ta2025
       POSTGRES_DB: alltogether
     ports:
-      - "5432:5432"
+      - "5433:5432"  # Port 5433 sur l'hôte pour éviter conflit avec PostgreSQL local
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -25,7 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/alltogether
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/alltogether  # Reste 5432 car c'est DANS le réseau Docker
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: BaseD@ta2025
       SPRING_PROFILES_ACTIVE: prod
