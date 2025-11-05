@@ -3,10 +3,18 @@
 # IDEs
 .idea/
 .vscode/
+*.iml
+.idea/*
+*.iws
+*.ipr
+out/
 
 # OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
 # Backups
 *.bak
@@ -14,19 +22,32 @@ Thumbs.db
 
 # Maven / Java
 /backend/target/
+/backend/.mvn/
+/backend/mvnw
+/backend/mvnw.cmd
 
 # Frontend
 /frontend/node_modules/
 /frontend/dist/
+/frontend/.vite/
+/frontend/.cache/
 
-# Uploaded files
+# Uploaded files (IMPORTANT: ne pas versionner les uploads utilisateurs)
 /uploads/
+/backend/uploads/
+/backend/src/main/resources/static/uploads/
+/backend/target/classes/static/uploads/
 
-# Env
+# Environment variables (IMPORTANT: contient des mots de passe)
 .env
 .env.*
+!.env.example
 
-# Editor files
-*.iml
-.idea/*
+# Logs
+*.log
+logs/
+/backend/logs/
+
+# Tests
+/backend/test-uploads/
 

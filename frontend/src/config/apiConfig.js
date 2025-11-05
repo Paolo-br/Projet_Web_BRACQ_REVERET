@@ -1,5 +1,17 @@
-const API_BASE_URL = 'http://localhost:8080/api';
-const BACKEND_BASE_URL = 'http://localhost:8080';
+// Détection automatique de l'URL du backend
+// En développement : utilise localhost
+// En production ou via réseau : utilise l'adresse actuelle
+const getBackendUrl = () => {
+  // Si on accède via localhost, on utilise localhost pour le backend
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8080';
+  }
+  // Sinon, on utilise l'IP actuelle avec le port 8080
+  return `http://${window.location.hostname}:8080`;
+};
+
+const BACKEND_BASE_URL = getBackendUrl();
+const API_BASE_URL = `${BACKEND_BASE_URL}/api`;
 
 const API_CONFIG = {
   BASE_URL: API_BASE_URL,

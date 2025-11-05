@@ -1,6 +1,7 @@
 // PlaceServiceTest.java
 package com.example.alltogether.service;
 
+import com.example.alltogether.dto.PlaceCreateDTO;
 import com.example.alltogether.dto.PlaceDTO;
 import com.example.alltogether.model.Category;
 import com.example.alltogether.model.City;
@@ -34,6 +35,7 @@ class PlaceServiceTest {
 
     private Place place;
     private City city;
+    private PlaceCreateDTO placeCreateDTO;
     private PlaceDTO placeDTO;
 
     @BeforeEach
@@ -48,7 +50,16 @@ class PlaceServiceTest {
         place.setCategory(Category.MONUMENT_HISTORIQUE);
         place.setAddress("Champ de Mars, Paris");
         place.setDescription("Monument emblématique");
+        place.setLatitude(48.8584f);
+        place.setLongitude(2.2945f);
         place.setCity(city);
+
+        placeCreateDTO = new PlaceCreateDTO();
+        placeCreateDTO.setName("Tour Eiffel");
+        placeCreateDTO.setCategory(Category.MONUMENT_HISTORIQUE);
+        placeCreateDTO.setAddress("Champ de Mars, Paris");
+        placeCreateDTO.setDescription("Monument emblématique");
+        placeCreateDTO.setCityId(1L);
 
         placeDTO = new PlaceDTO();
         placeDTO.setName("Tour Eiffel");
@@ -59,34 +70,49 @@ class PlaceServiceTest {
     }
 
     @Test
-    void createPlaceFromDTO_ShouldSuccess_WhenCityExists() {
+    void createPlace_ShouldSuccess_WhenCityExists() {
         // Arrange
         when(cityRepository.findById(1L)).thenReturn(Optional.of(city));
+        when(placeRepository.existsByName("Tour Eiffel")).thenReturn(false);
         when(placeRepository.save(any(Place.class))).thenReturn(place);
 
         // Act
-        PlaceDTO result = placeService.createPlaceFromDTO(placeDTO);
+        PlaceDTO result = placeService.createPlace(placeCreateDTO);
 
         // Assert
         assertNotNull(result);
         assertEquals("Tour Eiffel", result.getName());
-    assertEquals("MONUMENT_HISTORIQUE", result.getCategory());
+        assertEquals("MONUMENT_HISTORIQUE", result.getCategory());
         verify(placeRepository, times(1)).save(any(Place.class));
     }
 
     @Test
-    void createPlaceFromDTO_ShouldHandleNullCategory() {
+    void createPlace_ShouldThrowException_WhenNameAlreadyExists() {
         // Arrange
-        placeDTO.setCategory(null);
         when(cityRepository.findById(1L)).thenReturn(Optional.of(city));
-        when(placeRepository.save(any(Place.class))).thenReturn(place);
+        when(placeRepository.existsByName("Tour Eiffel")).thenReturn(true);
 
-        // Act
-        PlaceDTO result = placeService.createPlaceFromDTO(placeDTO);
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            placeService.createPlace(placeCreateDTO);
+        });
 
-        // Assert
-        assertNotNull(result);
-        verify(placeRepository, times(1)).save(any(Place.class));
+        assertEquals("Un lieu avec ce nom existe déjà", exception.getMessage());
+        verify(placeRepository, never()).save(any(Place.class));
+    }
+
+    @Test
+    void createPlace_ShouldThrowException_WhenCityNotFound() {
+        // Arrange
+        when(cityRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            placeService.createPlace(placeCreateDTO);
+        });
+
+        assertEquals("Ville non trouvée", exception.getMessage());
+        verify(placeRepository, never()).save(any(Place.class));
     }
 
     @Test

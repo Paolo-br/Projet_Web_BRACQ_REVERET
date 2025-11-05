@@ -70,7 +70,6 @@ class UserProfileServiceTest {
     void createUser_ShouldSuccess_WhenEmailIsUnique() {
         // Arrange
         when(userProfileRepository.existsByEmail("john.doe@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(user);
 
         // Act
@@ -102,7 +101,7 @@ class UserProfileServiceTest {
     void updateUser_ShouldSuccess_WhenUserExistsAndEmailIsUnique() {
         // Arrange
         when(userProfileRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userProfileRepository.existsByEmail("john.smith@example.com")).thenReturn(false);
+        when(userProfileRepository.existsByEmailAndIdNot("john.smith@example.com", 1L)).thenReturn(false);
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(user);
 
         // Act
@@ -119,14 +118,14 @@ class UserProfileServiceTest {
     void updateUser_ShouldThrowException_WhenEmailAlreadyExists() {
         // Arrange
         when(userProfileRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userProfileRepository.existsByEmail("john.smith@example.com")).thenReturn(true);
+        when(userProfileRepository.existsByEmailAndIdNot("john.smith@example.com", 1L)).thenReturn(true);
 
         // Act & Assert
         EmailAlreadyExistsException exception = assertThrows(EmailAlreadyExistsException.class, () -> {
             userProfileService.updateUser(1L, userUpdateDTO);
         });
 
-        assertEquals("L'adresse email john.smith@example.com est déjà utilisée", exception.getMessage());
+        assertEquals("L'email john.smith@example.com est déjà utilisé par un autre utilisateur", exception.getMessage());
         verify(userProfileRepository, never()).save(any(UserProfile.class));
     }
 

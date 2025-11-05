@@ -2,9 +2,11 @@
 package com.example.alltogether.service;
 
 import com.example.alltogether.dto.ParticipationDTO;
+import com.example.alltogether.model.City;
 import com.example.alltogether.model.Participation;
 import com.example.alltogether.model.UserProfile;
 import com.example.alltogether.model.Place;
+import com.example.alltogether.repository.CityRepository;
 import com.example.alltogether.repository.ParticipationRepository;
 import com.example.alltogether.repository.UserProfileRepository;
 import com.example.alltogether.repository.PlaceRepository;
@@ -36,15 +38,27 @@ class ParticipationServiceIntegrationTest {
     @Autowired
     private ParticipationRepository participationRepository;
 
+    @Autowired
+    private CityRepository cityRepository;
+
     private UserProfile user;
     private Place place;
+    private City city;
 
     @BeforeEach
     void setUp() {
         // Nettoyer la base de données
         participationRepository.deleteAll();
-        userProfileRepository.deleteAll();
         placeRepository.deleteAll();
+        userProfileRepository.deleteAll();
+        cityRepository.deleteAll();
+
+        // Créer une ville de test
+        city = new City();
+        city.setName("Paris");
+        city.setLatitude(48.8566f);
+        city.setLongitude(2.3522f);
+        city = cityRepository.save(city);
 
         // Créer un utilisateur de test
         user = new UserProfile();
@@ -60,6 +74,10 @@ class ParticipationServiceIntegrationTest {
         place = new Place();
         place.setName("Test Place");
         place.setAddress("Test Address");
+        place.setCategory(com.example.alltogether.model.Category.BAR);
+        place.setLatitude(48.8566f);
+        place.setLongitude(2.3522f);
+        place.setCity(city);
         place = placeRepository.save(place);
     }
 
