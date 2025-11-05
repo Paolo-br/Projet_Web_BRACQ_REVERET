@@ -87,10 +87,14 @@ public class SecurityConfig {
                         .requestMatchers("/debug/**").permitAll()
                         // Permettre la lecture des participations par lieu (pour afficher qui participe)
                         .requestMatchers(HttpMethod.GET, "/api/participations/place/**").permitAll()
+                        // Permettre la vérification de participation pour un utilisateur/lieu spécifique
+                        .requestMatchers(HttpMethod.GET, "/api/participations/user/*/place/*/today").hasAnyRole("USER", "ADMIN")
 
                         // Endpoints USER (lecture + participations)
                         .requestMatchers("/api/participations/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
+                        // Permettre la lecture des profils utilisateurs pour les utilisateurs authentifiés
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN")
 
                         // Endpoints ADMIN seulement (création, modification, suppression)
                         .requestMatchers(HttpMethod.POST, "/api/cities/**").hasRole("ADMIN")
@@ -99,7 +103,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/places/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/places/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/places/**").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Toutes les autres requêtes nécessitent une authentification

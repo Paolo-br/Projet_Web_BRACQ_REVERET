@@ -44,6 +44,14 @@ const userService = {
     });
     if (!res.ok) throw new Error('Impossible de récupérer les participations');
     return await res.json();
+  },
+
+  async getUserById(userId) {
+    const res = await fetch(API_CONFIG.ENDPOINTS.USER.BY_ID(userId), {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Impossible de récupérer le profil utilisateur');
+    return await res.json();
   }
 };
 

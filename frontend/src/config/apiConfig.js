@@ -56,6 +56,7 @@ const API_CONFIG = {
       UPLOAD_PHOTO: `${API_BASE_URL}/images/user`,
       UPLOAD_MY_PHOTO: `${API_BASE_URL}/profile/me/photo`,
       UPDATE_PASSWORD: `${API_BASE_URL}/users/{id}/password`,
+      BY_ID: (id) => `${API_BASE_URL}/users/${id}`,
     },
   },
 };

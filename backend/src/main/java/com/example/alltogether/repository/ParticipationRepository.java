@@ -17,6 +17,9 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     List<Participation> findByUserId(Long userId);
     List<Participation> findByPlaceId(Long placeId);
 
+    // Trouver toutes les participations pour un lieu à une date donnée
+    List<Participation> findByPlaceIdAndParticipationDate(Long placeId, LocalDate participationDate);
+
     // Vérifier si une participation existe déjà pour un utilisateur, lieu et date
     boolean existsByUserIdAndPlaceIdAndParticipationDate(Long userId, Long placeId, LocalDate participationDate);
 

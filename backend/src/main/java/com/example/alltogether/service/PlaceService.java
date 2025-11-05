@@ -5,11 +5,14 @@ import com.example.alltogether.dto.PlaceDTO;
 import com.example.alltogether.model.Category;
 import com.example.alltogether.model.City;
 import com.example.alltogether.model.Place;
+import com.example.alltogether.model.Participation;
 import com.example.alltogether.repository.CityRepository;
 import com.example.alltogether.repository.PlaceRepository;
+import com.example.alltogether.repository.ParticipationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,11 +22,14 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final CityRepository cityRepository;
+    private final ParticipationRepository participationRepository;
 
     @Autowired
-    public PlaceService(PlaceRepository placeRepository, CityRepository cityRepository) {
+    public PlaceService(PlaceRepository placeRepository, CityRepository cityRepository, 
+                       ParticipationRepository participationRepository) {
         this.placeRepository = placeRepository;
         this.cityRepository = cityRepository;
+        this.participationRepository = participationRepository;
     }
 
     // GET: Retourne une liste de PlaceDTO
@@ -198,6 +204,14 @@ public class PlaceService {
 
     // Conversion Entity → DTO
     public PlaceDTO toDTO(Place place) {
+        // Compter les participations actives pour aujourd'hui
+        LocalDate today = LocalDate.now();
+        int participationCount = (int) participationRepository
+                .findByPlaceIdAndParticipationDate(place.getId(), today)
+                .stream()
+                .filter(p -> p.getStatus() == Participation.ParticipationStatus.INSCRIT)
+                .count();
+
         return new PlaceDTO(
                 place.getId(),
                 place.getName(),
@@ -209,7 +223,8 @@ public class PlaceService {
                 place.getLatitude(),
                 place.getLongitude(),
                 place.getCity() != null ? place.getCity().getId() : null,
-                place.getCity() != null ? place.getCity().getName() : null
+                place.getCity() != null ? place.getCity().getName() : null,
+                participationCount
         );
     }
 

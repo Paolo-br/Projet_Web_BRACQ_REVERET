@@ -15,6 +15,7 @@ public class PlaceDTO {
     private float longitude;
     private Long cityId;         // Référence à la ville (évite de charger City entière)
     private String cityName;     // Optionnel: utile pour affichage direct
+    private Integer participationCount; // Nombre de participations aujourd'hui
 
     public PlaceDTO() {}
 
@@ -32,6 +33,25 @@ public class PlaceDTO {
         this.longitude = longitude;
         this.cityId = cityId;
         this.cityName = cityName;
+        this.participationCount = 0;
+    }
+
+    public PlaceDTO(Long id, String name, String category, String address,
+                    String description, String openingHours, List<String> photos,
+                    float latitude, float longitude, Long cityId, String cityName,
+                    Integer participationCount) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.address = address;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.photos = photos;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.cityId = cityId;
+        this.cityName = cityName;
+        this.participationCount = participationCount;
     }
 
     // Getters & Setters
@@ -67,4 +87,7 @@ public class PlaceDTO {
 
     public String getCityName() { return cityName; }
     public void setCityName(String cityName) { this.cityName = cityName; }
+
+    public Integer getParticipationCount() { return participationCount; }
+    public void setParticipationCount(Integer participationCount) { this.participationCount = participationCount; }
 }

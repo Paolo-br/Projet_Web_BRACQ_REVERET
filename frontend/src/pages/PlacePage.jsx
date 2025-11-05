@@ -611,6 +611,7 @@ function PlacePage() {
             {participants.map((participant) => (
               <div
                 key={participant.id}
+                onClick={() => navigate(`/user/${participant.userId}`)}
                 style={{
                   padding: '20px',
                   backgroundColor: 'white',
@@ -619,7 +620,8 @@ function PlacePage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '15px',
-                  transition: 'transform 0.2s, box-shadow 0.2s'
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  cursor: 'pointer'
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-3px)';
