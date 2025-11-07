@@ -27,12 +27,17 @@ public class UserUpdateDTO {
     private String countryOrigin;
 
     private String profilePictureUrl;
+    private Boolean showParticipationHistory;
+    private String instagramUrl;
+    private String facebookUrl;
+    private String xUrl;
 
     // Constructeurs
     public UserUpdateDTO() {}
 
     public UserUpdateDTO(String firstName, String lastName, String email, Integer yearOfBirth,
-                         String currentCity, String countryOrigin, String profilePictureUrl) {
+                         String currentCity, String countryOrigin, String profilePictureUrl,
+                         String instagramUrl, String facebookUrl, String xUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -40,6 +45,9 @@ public class UserUpdateDTO {
         this.currentCity = currentCity;
         this.countryOrigin = countryOrigin;
         this.profilePictureUrl = profilePictureUrl;
+        this.instagramUrl = instagramUrl;
+        this.facebookUrl = facebookUrl;
+        this.xUrl = xUrl;
     }
 
     // Getters et setters
@@ -63,4 +71,13 @@ public class UserUpdateDTO {
 
     public String getProfilePictureUrl() { return profilePictureUrl; }
     public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
+
+    public Boolean getShowParticipationHistory() { return showParticipationHistory; }
+    public void setShowParticipationHistory(Boolean showParticipationHistory) { this.showParticipationHistory = showParticipationHistory; }
+    public String getInstagramUrl() { return instagramUrl; }
+    public void setInstagramUrl(String instagramUrl) { this.instagramUrl = instagramUrl; }
+    public String getFacebookUrl() { return facebookUrl; }
+    public void setFacebookUrl(String facebookUrl) { this.facebookUrl = facebookUrl; }
+    public String getXUrl() { return xUrl; }
+    public void setXUrl(String xUrl) { this.xUrl = xUrl; }
 }

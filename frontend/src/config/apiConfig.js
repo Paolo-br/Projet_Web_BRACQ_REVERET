@@ -53,6 +53,8 @@ const API_CONFIG = {
     USER: {
       PROFILE: `${API_BASE_URL}/profile/me`,
       UPDATE: `${API_BASE_URL}/profile/me`,
+      SOCIAL_CONNECT: (provider) => `${API_BASE_URL}/profile/me/social/connect/${provider}`,
+      SOCIAL_LINK: `${API_BASE_URL}/profile/me/social`,
       UPLOAD_PHOTO: `${API_BASE_URL}/images/user`,
       UPLOAD_MY_PHOTO: `${API_BASE_URL}/profile/me/photo`,
       UPDATE_PASSWORD: `${API_BASE_URL}/users/{id}/password`,

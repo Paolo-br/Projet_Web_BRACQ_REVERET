@@ -54,6 +54,18 @@ public class UserProfile implements UserDetails {
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
+    @Column(name = "instagram_url")
+    private String instagramUrl;
+
+    @Column(name = "facebook_url")
+    private String facebookUrl;
+
+    @Column(name = "x_url")
+    private String xUrl;
+
+    @Column(name = "show_participation_history")
+    private Boolean showParticipationHistory = true;
+
     //Constructeur sans encodage automatique du mot de passe
     public UserProfile() {}
 
@@ -93,8 +105,17 @@ public class UserProfile implements UserDetails {
     public void setCountryOrigin(String countryOrigin) { this.countryOrigin = countryOrigin; }
     public String getProfilePictureUrl() { return profilePictureUrl; }
     public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
+    public String getInstagramUrl() { return instagramUrl; }
+    public void setInstagramUrl(String instagramUrl) { this.instagramUrl = instagramUrl; }
+    public String getFacebookUrl() { return facebookUrl; }
+    public void setFacebookUrl(String facebookUrl) { this.facebookUrl = facebookUrl; }
+    public String getXUrl() { return xUrl; }
+    public void setXUrl(String xUrl) { this.xUrl = xUrl; }
     public List<Participation> getParticipations() { return participations; }
     public void setParticipations(List<Participation> participations) { this.participations = participations; }
+
+    public Boolean getShowParticipationHistory() { return showParticipationHistory == null ? true : showParticipationHistory; }
+    public void setShowParticipationHistory(Boolean showParticipationHistory) { this.showParticipationHistory = showParticipationHistory; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

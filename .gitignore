@@ -35,7 +35,7 @@ Thumbs.db
 # Uploaded files (IMPORTANT: ne pas versionner les uploads utilisateurs)
 /uploads/
 /backend/uploads/
-/backend/src/main/resources/static/uploads/
+#/backend/src/main/resources/static/uploads/
 /backend/target/classes/static/uploads/
 
 # Environment variables (IMPORTANT: contient des mots de passe)

@@ -52,7 +52,31 @@ const userService = {
     });
     if (!res.ok) throw new Error('Impossible de récupérer le profil utilisateur');
     return await res.json();
-  }
+  },
+
+  async getSocialConnectUrl(provider) {
+    const res = await fetch(API_CONFIG.ENDPOINTS.USER.SOCIAL_CONNECT(provider), {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Impossible de récupérer l\'URL de connexion sociale');
+    }
+    return await res.json();
+  },
+
+  async linkSocialUrl(provider, url) {
+    const res = await fetch(API_CONFIG.ENDPOINTS.USER.SOCIAL_LINK, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ provider, url }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Erreur lors du lien du profil social');
+    }
+    return;
+  },
 };
 
 export default userService;

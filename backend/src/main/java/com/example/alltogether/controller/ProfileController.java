@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -70,5 +72,34 @@ public class ProfileController {
         Long id = current.get().getId();
         imageService.deleteUserProfileImage(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // GET /api/profile/me/social/connect/{provider}
+    // Retourne une URL pour initier un OAuth (placeholder/simple builder)
+    @GetMapping("/me/social/connect/{provider}")
+    public ResponseEntity<Map<String,String>> getSocialConnectUrl(@PathVariable String provider) {
+        // NOTE: implémentation simple. Remplacez par la génération d'URL OAuth réelle si nécessaire.
+        String redirectBase = "http://localhost:3000/social/callback"; // frontend callback
+        String connectUrl = "https://auth.example.com/oauth/" + provider + "?redirect_uri=" + redirectBase + "&state=xyz";
+        Map<String,String> res = new HashMap<>();
+        res.put("url", connectUrl);
+        return ResponseEntity.ok(res);
+    }
+
+    // POST /api/profile/me/social
+    // Body: { provider: "instagram", url: "https://..." }
+    @PostMapping("/me/social")
+    public ResponseEntity<Void> linkSocial(@RequestBody com.example.alltogether.dto.SocialLinkDTO payload) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserProfileDTO> current = userProfileService.getUserByEmail(email);
+        if (current.isEmpty()) return ResponseEntity.notFound().build();
+        Long id = current.get().getId();
+        try {
+            userProfileService.linkSocialUrl(id, payload.getProvider(), payload.getUrl());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

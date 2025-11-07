@@ -61,6 +61,8 @@ public class UserProfileService {
         user.setCurrentCity(userCreateDTO.getCurrentCity());
         user.setCountryOrigin(userCreateDTO.getCountryOrigin());
         user.setRoles("USER");
+    // Par défaut, autoriser l'affichage de l'historique de participation
+    user.setShowParticipationHistory(true);
 
         UserProfile savedUser = userProfileRepository.save(user);
         return toProfileDTO(savedUser);
@@ -90,6 +92,22 @@ public class UserProfileService {
                     user.setCountryOrigin(userUpdateDTO.getCountryOrigin());
                     if (userUpdateDTO.getProfilePictureUrl() != null) {
                         user.setProfilePictureUrl(userUpdateDTO.getProfilePictureUrl());
+                    }
+
+                    // Social links
+                    if (userUpdateDTO.getInstagramUrl() != null) {
+                        user.setInstagramUrl(userUpdateDTO.getInstagramUrl());
+                    }
+                    if (userUpdateDTO.getFacebookUrl() != null) {
+                        user.setFacebookUrl(userUpdateDTO.getFacebookUrl());
+                    }
+                    if (userUpdateDTO.getXUrl() != null) {
+                        user.setXUrl(userUpdateDTO.getXUrl());
+                    }
+
+                    // Mettre à jour la visibilité de l'historique si fourni
+                    if (userUpdateDTO.getShowParticipationHistory() != null) {
+                        user.setShowParticipationHistory(userUpdateDTO.getShowParticipationHistory());
                     }
 
                     // Sauvegarde et conversion en DTO
@@ -150,24 +168,51 @@ public class UserProfileService {
     }
 
     private UserProfileDTO toProfileDTO(UserProfile user) {
-        return new UserProfileDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getAge(),
-                user.getYearOfBirth(),
-                user.getCurrentCity(),
-                user.getCountryOrigin(),
-                user.getProfilePictureUrl(),
-                user.getRoles()
-        );
+    UserProfileDTO dto = new UserProfileDTO(
+        user.getId(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getEmail(),
+        user.getAge(),
+        user.getYearOfBirth(),
+        user.getCurrentCity(),
+        user.getCountryOrigin(),
+        user.getProfilePictureUrl(),
+        user.getRoles(),
+        user.getInstagramUrl(),
+        user.getFacebookUrl(),
+        user.getXUrl()
+    );
+    dto.setShowParticipationHistory(user.getShowParticipationHistory());
+    return dto;
     }
 
     public void updateProfilePicture(Long userId, String imageUrl) {
         UserProfile user = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         user.setProfilePictureUrl(imageUrl);
+        userProfileRepository.save(user);
+    }
+
+    // Lier un profil social (instagram/facebook/x) au compte utilisateur
+    public void linkSocialUrl(Long userId, String provider, String url) {
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        switch (provider.toLowerCase()) {
+            case "instagram":
+            case "insta":
+                user.setInstagramUrl(url);
+                break;
+            case "facebook":
+                user.setFacebookUrl(url);
+                break;
+            case "x":
+            case "twitter":
+                user.setXUrl(url);
+                break;
+            default:
+                throw new IllegalArgumentException("Provider inconnu: " + provider);
+        }
         userProfileRepository.save(user);
     }
 }

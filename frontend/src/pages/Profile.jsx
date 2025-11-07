@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import userService from "../services/userService";
+import InstaIcon from "../assets/insta.png";
+import FbIcon from "../assets/facebook.png";
+import XIcon from "../assets/x.png";
 import { participationService } from "../services/participationService";
 import API_CONFIG from "../config/apiConfig";
 import { useParticipation } from "../contexts/ParticipationContext";
@@ -19,6 +22,9 @@ function Profile() {
   const [cities, setCities] = useState([]);
   const [cancelingId, setCancelingId] = useState(null);
   const fileInputRef = useRef(null);
+  const instaRef = useRef(null);
+  const fbRef = useRef(null);
+  const xRef = useRef(null);
 
   // Fonction pour charger les participations
   const loadParticipations = async (userId) => {
@@ -47,8 +53,12 @@ function Profile() {
         const data = await userService.getMyProfile();
         setProfile(data);
         setOriginalProfile(data);
-        // charger participations
-        await loadParticipations(data.id);
+        // charger participations uniquement si l'utilisateur partage son historique
+        if (data.showParticipationHistory !== false) {
+          await loadParticipations(data.id);
+        } else {
+          setParticipations([]);
+        }
       } catch (e) {
         console.error('Erreur chargement profil', e);
       }
@@ -110,7 +120,11 @@ function Profile() {
         yearOfBirth: profile.yearOfBirth,
         currentCity: profile.currentCity,
         countryOrigin: profile.countryOrigin,
-        profilePictureUrl: profile.profilePictureUrl
+        profilePictureUrl: profile.profilePictureUrl,
+        showParticipationHistory: profile.showParticipationHistory,
+        instagramUrl: profile.instagramUrl,
+        facebookUrl: profile.facebookUrl,
+        xUrl: profile.xUrl
       });
       setProfile(updated);
       setOriginalProfile(updated);
@@ -258,6 +272,113 @@ function Profile() {
         </div>
         <h2 style={{ margin: "10px 0", color: "#333" }}>Mon Profil</h2>
         <p style={{ color: "#666", margin: "5px 0" }}>{userEmail}</p>
+        <div style={{ marginTop: 10, display: 'flex', justifyContent: 'center', gap: 10 }}>
+          {/** Instagram */}
+          <img
+            src={InstaIcon}
+            alt="Instagram"
+            style={{ width: 36, height: 36, cursor: 'pointer' }}
+            onClick={async () => {
+              if (editing) {
+                const choice = window.confirm('Voulez-vous lier via OAuth (OK) ou coller une URL manuellement (Annuler) ?');
+                if (choice) {
+                  try {
+                    const res = await userService.getSocialConnectUrl('instagram');
+                    if (res && res.url) window.open(res.url, '_blank', 'noopener');
+                  } catch (e) { alert('Impossible d\'initier la connexion sociale'); }
+                } else {
+                  const url = window.prompt('Collez l\'URL complète de votre profil Instagram (ex: https://instagram.com/...)');
+                  if (url) {
+                    try {
+                      await userService.linkSocialUrl('instagram', url);
+                      const updated = await userService.getMyProfile();
+                      setProfile(updated);
+                      setOriginalProfile(updated);
+                    } catch (e) { alert('Erreur lors du lien Instagram'); }
+                  }
+                }
+              } else {
+                if (profile?.instagramUrl) {
+                  window.open(profile.instagramUrl, '_blank', 'noopener');
+                } else {
+                  // passer en mode édition et focus sur l'input Instagram
+                  setEditing(true);
+                  setTimeout(() => { if (instaRef.current) instaRef.current.focus(); }, 120);
+                }
+              }
+            }}
+          />
+
+          {/** Facebook */}
+          <img
+            src={FbIcon}
+            alt="Facebook"
+            style={{ width: 36, height: 36, cursor: 'pointer' }}
+            onClick={async () => {
+              if (editing) {
+                const choice = window.confirm('Voulez-vous lier via OAuth (OK) ou coller une URL manuellement (Annuler) ?');
+                if (choice) {
+                  try {
+                    const res = await userService.getSocialConnectUrl('facebook');
+                    if (res && res.url) window.open(res.url, '_blank', 'noopener');
+                  } catch (e) { alert('Impossible d\'initier la connexion sociale'); }
+                } else {
+                  const url = window.prompt('Collez l\'URL complète de votre profil Facebook (ex: https://facebook.com/...)');
+                  if (url) {
+                    try {
+                      await userService.linkSocialUrl('facebook', url);
+                      const updated = await userService.getMyProfile();
+                      setProfile(updated);
+                      setOriginalProfile(updated);
+                    } catch (e) { alert('Erreur lors du lien Facebook'); }
+                  }
+                }
+              } else {
+                if (profile?.facebookUrl) {
+                  window.open(profile.facebookUrl, '_blank', 'noopener');
+                } else {
+                  setEditing(true);
+                  setTimeout(() => { if (fbRef.current) fbRef.current.focus(); }, 120);
+                }
+              }
+            }}
+          />
+
+          {/** X/Twitter */}
+          <img
+            src={XIcon}
+            alt="X"
+            style={{ width: 36, height: 36, cursor: 'pointer' }}
+            onClick={async () => {
+              if (editing) {
+                const choice = window.confirm('Voulez-vous lier via OAuth (OK) ou coller une URL manuellement (Annuler) ?');
+                if (choice) {
+                  try {
+                    const res = await userService.getSocialConnectUrl('x');
+                    if (res && res.url) window.open(res.url, '_blank', 'noopener');
+                  } catch (e) { alert('Impossible d\'initier la connexion sociale'); }
+                } else {
+                  const url = window.prompt('Collez l\'URL complète de votre profil X (ex: https://x.com/...)');
+                  if (url) {
+                    try {
+                      await userService.linkSocialUrl('x', url);
+                      const updated = await userService.getMyProfile();
+                      setProfile(updated);
+                      setOriginalProfile(updated);
+                    } catch (e) { alert('Erreur lors du lien X'); }
+                  }
+                }
+              } else {
+                if (profile?.xUrl) {
+                  window.open(profile.xUrl, '_blank', 'noopener');
+                } else {
+                  setEditing(true);
+                  setTimeout(() => { if (xRef.current) xRef.current.focus(); }, 120);
+                }
+              }
+            }}
+          />
+        </div>
       </div>
 
       {/* Informations */}
@@ -394,6 +515,87 @@ function Profile() {
                   <span style={{ color: "#555" }}>{profile.countryOrigin}</span>
                 )}
               </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Instagram :</strong>
+                {editing ? (
+                  <input
+                    type="text"
+                      ref={instaRef}
+                      value={profile.instagramUrl || ''}
+                      onChange={(e) => handleChange('instagramUrl', e.target.value)}
+                    placeholder="https://instagram.com/votreprofil"
+                    style={{
+                      padding: "6px 10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.instagramUrl || 'Non renseigné'}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Facebook :</strong>
+                {editing ? (
+                  <input
+                      ref={fbRef}
+                      type="text"
+                      value={profile.facebookUrl || ''}
+                      onChange={(e) => handleChange('facebookUrl', e.target.value)}
+                    placeholder="https://facebook.com/votreprofil"
+                    style={{
+                      padding: "6px 10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.facebookUrl || 'Non renseigné'}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>X (Twitter) :</strong>
+                {editing ? (
+                  <input
+                      ref={xRef}
+                      type="text"
+                      value={profile.xUrl || ''}
+                      onChange={(e) => handleChange('xUrl', e.target.value)}
+                    placeholder="https://x.com/votreprofil"
+                    style={{
+                      padding: "6px 10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      flex: 1,
+                      fontSize: "14px"
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.xUrl || 'Non renseigné'}</span>
+                )}
+              </div>
+
+              <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                <strong style={{ minWidth: "120px", color: "#555" }}>Historique visible :</strong>
+                {editing ? (
+                  <input
+                    type="checkbox"
+                    checked={profile.showParticipationHistory !== false}
+                    onChange={(e) => handleChange('showParticipationHistory', e.target.checked)}
+                    style={{ width: 20, height: 20 }}
+                  />
+                ) : (
+                  <span style={{ color: "#555" }}>{profile.showParticipationHistory !== false ? 'Oui' : 'Non'}</span>
+                )}
+              </div>
+
             </div>
           )}
         </div>

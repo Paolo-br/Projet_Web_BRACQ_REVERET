@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import userService from "../services/userService";
 import API_CONFIG from "../config/apiConfig";
+import InstaIcon from "../assets/insta.png";
+import FbIcon from "../assets/facebook.png";
+import XIcon from "../assets/x.png";
 
 function UserProfileView() {
   const { userId } = useParams();
@@ -24,9 +27,13 @@ function UserProfileView() {
       const profileData = await userService.getUserById(userId);
       setProfile(profileData);
 
-      // Charger les participations de l'utilisateur
-      const participationsData = await userService.getParticipations(userId);
-      setParticipations(participationsData);
+      // Charger les participations de l'utilisateur uniquement si l'utilisateur partage son historique
+      if (profileData.showParticipationHistory !== false) {
+        const participationsData = await userService.getParticipations(userId);
+        setParticipations(participationsData);
+      } else {
+        setParticipations([]);
+      }
     } catch (err) {
       console.error('Erreur lors du chargement du profil:', err);
       setError(err.message || 'Erreur lors du chargement du profil');
@@ -209,6 +216,25 @@ function UserProfileView() {
           }}>
             {profile.age} ans
           </div>
+
+          {/* Social icons */}
+          <div style={{ marginTop: 12, display: 'flex', gap: 10 }}>
+            {profile.instagramUrl && (
+              <a href={profile.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram" style={{ textDecoration: 'none' }}>
+                <img src={InstaIcon} alt="Instagram" style={{ width:36, height:36 }} />
+              </a>
+            )}
+            {profile.facebookUrl && (
+              <a href={profile.facebookUrl} target="_blank" rel="noreferrer" aria-label="Facebook" style={{ textDecoration: 'none' }}>
+                <img src={FbIcon} alt="Facebook" style={{ width:36, height:36 }} />
+              </a>
+            )}
+            {profile.xUrl && (
+              <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X (Twitter)" style={{ textDecoration: 'none' }}>
+                <img src={XIcon} alt="X" style={{ width:36, height:36 }} />
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Informations détaillées */}
@@ -299,7 +325,18 @@ function UserProfileView() {
           </span>
         </h2>
 
-        {pastParticipations.length === 0 ? (
+        {profile.showParticipationHistory === false ? (
+          <div style={{
+            padding: '30px',
+            textAlign: 'center',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            color: '#6c757d'
+          }}>
+            <div style={{ fontSize: '1.2rem', marginBottom: '8px' }}> Historique privé</div>
+            <div>Cet utilisateur a choisi de ne pas partager son historique de participation.</div>
+          </div>
+        ) : pastParticipations.length === 0 ? (
           <div style={{
             padding: '40px 20px',
             textAlign: 'center',

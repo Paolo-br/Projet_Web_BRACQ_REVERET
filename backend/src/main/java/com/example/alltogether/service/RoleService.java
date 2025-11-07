@@ -56,17 +56,20 @@ public class RoleService {
     }
 
     private UserProfileDTO convertToDTO(UserProfile user) {
-        return new UserProfileDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getAge(),
-                user.getYearOfBirth(),
-                user.getCurrentCity(),
-                user.getCountryOrigin(),
-                user.getProfilePictureUrl(),
-                user.getRoles()
-        );
+    return new UserProfileDTO(
+        user.getId(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getEmail(),
+        user.getAge(),
+        user.getYearOfBirth(),
+        user.getCurrentCity(),
+        user.getCountryOrigin(),
+        user.getProfilePictureUrl(),
+        user.getRoles(),
+        user.getInstagramUrl(),
+        user.getFacebookUrl(),
+        user.getXUrl()
+    );
     }
 }
