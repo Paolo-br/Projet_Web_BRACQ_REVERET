@@ -77,9 +77,7 @@ npm run dev
 |---------|------|-----|
 | Frontend | 5173 | http://localhost:5173 |
 | Backend | 8080 | http://localhost:8080 |
-| PostgreSQL | 5433 | localhost:5433 |
-
-⚠️ **Note importante** : Le port 5433 (et non 5432) est utilisé pour éviter les conflits si vous avez PostgreSQL déjà installé localement.
+| PostgreSQL | 5432 | localhost:5432 |
 
 ---
 
@@ -89,13 +87,11 @@ npm run dev
 
 ```
 Host:     localhost
-Port:     5433  ⚠️ Attention : 5433, pas 5432 !
+Port:     5432
 Database: alltogether
 Username: postgres
 Password: BaseD@ta2025
 ```
-
-**Pourquoi 5433 ?** Si vous avez PostgreSQL installé localement, il utilise déjà le port 5432. Docker PostgreSQL utilise donc 5433 pour éviter les conflits.
 
 ---
 

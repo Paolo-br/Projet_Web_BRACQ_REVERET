@@ -234,7 +234,7 @@ function UserProfileView() {
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
             }}>
-              📍 Ville actuelle
+              Ville actuelle
             </div>
             <div style={{
               fontSize: '1.2rem',
@@ -261,7 +261,7 @@ function UserProfileView() {
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
             }}>
-              🌍 Pays d'origine
+              Pays d'origine
             </div>
             <div style={{
               fontSize: '1.2rem',
@@ -289,7 +289,7 @@ function UserProfileView() {
           alignItems: 'center',
           gap: '10px'
         }}>
-          📚 Historique des participations
+          Historique des participations
           <span style={{
             fontSize: '1rem',
             color: '#6c757d',

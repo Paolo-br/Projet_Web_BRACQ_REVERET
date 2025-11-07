@@ -475,7 +475,7 @@ function PlacePage() {
                 marginBottom: '5px',
                 color: '#333'
               }}>
-                🕐 Horaires d'ouverture
+                Horaires d'ouverture
               </div>
               <div style={{ color: '#555' }}>
                 {place.openingHours}
@@ -535,7 +535,7 @@ function PlacePage() {
               e.target.style.transform = 'scale(1)';
             }}
           >
-            {participationLoading ? 'Chargement...' : isParticipating ? '❌ Annuler ma participation' : '✅ J\'y vais aujourd\'hui !'}
+            {participationLoading ? 'Chargement...' : isParticipating ? 'Annuler ma participation' : 'J\'y vais aujourd\'hui !'}
           </button>
         </div>
       </div>
@@ -588,7 +588,7 @@ function PlacePage() {
           marginBottom: '20px',
           color: '#333'
         }}>
-          👥 Qui y va aujourd'hui ? ({participants.length})
+          Qui y va aujourd'hui ? ({participants.length})
         </h2>
         
         {participants.length === 0 ? (
