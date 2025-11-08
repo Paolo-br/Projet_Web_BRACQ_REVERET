@@ -101,7 +101,7 @@ function Home() {
       </div>
 
       {/* Section Carte interactive */}
-      <div style={{ marginBottom: "60px" }}>
+      <div id="section-carte" style={{ marginBottom: "60px", scrollMarginTop: "100px" }}>
         <h2 style={{
           fontSize: "1.8rem",
           fontWeight: "bold",
@@ -149,19 +149,21 @@ function Home() {
 
       {/* Section Explorer par ville */}
       {!loading && cities.length > 0 && (
-        <Carousel 
-          title="Explorer par ville"
-          subtitle="Ces destinations prisées ont beaucoup à offrir"
-        >
-          {cities.map((city) => (
-            <CityCard key={city.id} city={city} />
-          ))}
-        </Carousel>
+        <div id="section-villes" style={{ scrollMarginTop: "100px" }}>
+          <Carousel
+            title="Explorer par ville"
+            subtitle="Ces destinations prisées ont beaucoup à offrir"
+          >
+            {cities.map((city) => (
+              <CityCard key={city.id} city={city} />
+            ))}
+          </Carousel>
+        </div>
       )}
 
       {/* Section Tous les Lieux avec Filtres par Catégorie */}
       {!loadingPlaces && (
-        <div style={{ marginTop: "60px" }}>
+        <div id="section-lieux" style={{ marginTop: "60px", scrollMarginTop: "100px" }}>
           {/* Titre de la section */}
           <h2 style={{
             fontSize: "1.8rem",

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Logo from "../assets/Logo.png";
 import authService from "../services/authService";
@@ -7,6 +7,7 @@ import API_CONFIG from "../config/apiConfig";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
 
@@ -34,6 +35,27 @@ function Navbar() {
     setIsAuthenticated(false);
     navigate("/");
   };
+
+  const scrollToSection = (sectionId) => {
+    if (location.pathname !== '/') {
+      // Si on n'est pas sur la page d'accueil, naviguer d'abord vers la page d'accueil
+      navigate('/');
+      // Attendre un peu que la page se charge avant de scroller
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      // Si on est déjà sur la page d'accueil, scroller directement
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   return (
     <nav 
       style={{
@@ -59,6 +81,88 @@ function Navbar() {
           style={{ height: "100px", cursor: "pointer" }} 
           onClick={() => window.location.href = "/"} 
         />
+      </div>
+
+      {/* Liens de navigation */}
+      <div style={{
+        display: "flex",
+        gap: "30px",
+        alignItems: "center",
+        flex: 1,
+        justifyContent: "center"
+      }}>
+        <button
+          onClick={() => scrollToSection('section-carte')}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#333",
+            fontSize: "1rem",
+            fontWeight: "500",
+            cursor: "pointer",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            transition: "all 0.2s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#e0e0e0";
+            e.currentTarget.style.color = "#646cff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "#333";
+          }}
+        >
+          Carte
+        </button>
+        <button
+          onClick={() => scrollToSection('section-villes')}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#333",
+            fontSize: "1rem",
+            fontWeight: "500",
+            cursor: "pointer",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            transition: "all 0.2s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#e0e0e0";
+            e.currentTarget.style.color = "#646cff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "#333";
+          }}
+        >
+          Villes
+        </button>
+        <button
+          onClick={() => scrollToSection('section-lieux')}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#333",
+            fontSize: "1rem",
+            fontWeight: "500",
+            cursor: "pointer",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            transition: "all 0.2s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#e0e0e0";
+            e.currentTarget.style.color = "#646cff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "#333";
+          }}
+        >
+          Lieux
+        </button>
       </div>
 
       {/* Boutons à droite */}
