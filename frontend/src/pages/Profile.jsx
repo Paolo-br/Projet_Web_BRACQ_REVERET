@@ -689,7 +689,7 @@ function Profile() {
       {/* Participations actives */}
       <div style={{ marginTop: "30px" }}>
         <h3 style={{ color: "#333", marginBottom: "15px" }}>
-          🎯 Mes participations actives
+           Mes participations actives
         </h3>
         
         {activeParticipations.length === 0 ? (
@@ -816,7 +816,7 @@ function Profile() {
       {pastParticipations.length > 0 && (
         <div style={{ marginTop: "30px" }}>
           <h3 style={{ color: "#333", marginBottom: "15px" }}>
-            📚 Historique des participations
+             Historique des participations
           </h3>
           
           <div 

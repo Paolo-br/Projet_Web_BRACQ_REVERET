@@ -218,8 +218,8 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_ni
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_nid_2.jpg' FROM place WHERE name = 'Le Nid';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_lieu_unique_1.jpg' FROM place WHERE name = 'Le Lieu Unique';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_lieu_unique_2.jpg' FROM place WHERE name = 'Le Lieu Unique';
-INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_clemenceau_1.jpg' FROM place WHERE name = 'Le Clémenceau';
-INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_clemenceau_2.jpg' FROM place WHERE name = 'Le Clémenceau';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/mojito_1.jpg' FROM place WHERE name = 'Mojito Royal';
+INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/mojito_2.jpg' FROM place WHERE name = 'Mojito Royal';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_brick_1.jpg' FROM place WHERE name = 'Le Brick';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_brick_2.jpg' FROM place WHERE name = 'Le Brick';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_mccarthys_1.jpg' FROM place WHERE name = 'Le McCarthy''s';

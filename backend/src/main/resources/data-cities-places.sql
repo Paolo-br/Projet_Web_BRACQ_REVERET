@@ -153,7 +153,7 @@ INSERT INTO place (name, category, address, description, opening_hours, latitude
 
 ('Le Nid', 'BAR', '1 Place Graslin', 'Bar étudiant avec vue', '17:00-02:00', 47.2120, -1.5540, 8),
 ('Le Lieu Unique', 'BAR', '2 Quai Ferdinand Favre', 'Bar étudiant culturel', '17:00-02:00', 47.2125, -1.5560, 8),
-('Le Clémenceau', 'BAR', '5 Rue de Strasbourg', 'Bar étudiant central', '17:00-02:00', 47.2150, -1.5505, 8),
+('Mojito Royal', 'BAR', '16 rue Jean Jacques Rousseau', 'Bar chaleureux', '17:00-02:00', 47.2129995, -1.5616639, 8),
 ('Le Brick', 'BAR', '10 Rue Kervegan', 'Bar étudiant convivial', '17:00-02:00', 47.2180, -1.5562, 8),
 ('Le McCarthy''s', 'BAR', '8 Rue de la Fosse', 'Pub/bar étudiant', '17:00-02:00', 47.2185, -1.5535, 8),
 ('Le Warehouse', 'BOITE_DE_NUIT', '21 Quai des Antilles', 'Club électro réputé sur l''île de Nantes', '23:00-05:00', 47.2032, -1.5680, 8),
