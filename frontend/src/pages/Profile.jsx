@@ -6,6 +6,7 @@ import InstaIcon from "../assets/insta.png";
 import FbIcon from "../assets/facebook.png";
 import XIcon from "../assets/x.png";
 import { participationService } from "../services/participationService";
+import favoriteService from "../services/favoriteService";
 import API_CONFIG from "../config/apiConfig";
 import { useParticipation } from "../contexts/ParticipationContext";
 
@@ -19,6 +20,7 @@ function Profile() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [participations, setParticipations] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [cities, setCities] = useState([]);
   const [cancelingId, setCancelingId] = useState(null);
   const fileInputRef = useRef(null);
@@ -59,6 +61,14 @@ function Profile() {
         } else {
           setParticipations([]);
         }
+          // charger favoris
+          try {
+            const favs = await favoriteService.getMyFavorites();
+            setFavorites(favs || []);
+          } catch (e) {
+            console.warn('Impossible de charger les favoris', e);
+            setFavorites([]);
+          }
       } catch (e) {
         console.error('Erreur chargement profil', e);
       }
@@ -685,6 +695,39 @@ function Profile() {
         </div>
       </div>
 
+
+        {/* Favoris */}
+        <div style={{ marginTop: "30px" }}>
+          <h3 style={{ color: "#333", marginBottom: "15px" }}>Mes favoris</h3>
+          {favorites.length === 0 ? (
+            <div style={{ padding: "20px", backgroundColor: "#f8f9fa", borderRadius: "6px", color: "#6c757d", textAlign: 'center' }}>
+              Vous n'avez pas encore ajouté de favoris.
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+              {favorites.map((place) => (
+                <div key={place.id} style={{ background: '#fff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                  <div style={{ height: 110, backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {place.photos && place.photos.length > 0 ? (
+                      <img src={place.photos[0].startsWith('/') ? `${API_CONFIG.BACKEND_URL}${place.photos[0]}` : `${API_CONFIG.BACKEND_URL}/${place.photos[0]}`} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ fontSize: 36 }}>{/* placeholder */}📍</div>
+                    )}
+                  </div>
+                  <div style={{ padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, color: '#333', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{place.name}</div>
+                      <div style={{ fontSize: 12, color: '#6c757d' }}>{place.city?.name || ''}</div>
+                    </div>
+                    <div>
+                      <button onClick={() => handleGoToPlace(place.id)} style={{ padding: '6px 10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Voir</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
       {/* Participations actives */}
       <div style={{ marginTop: "30px" }}>

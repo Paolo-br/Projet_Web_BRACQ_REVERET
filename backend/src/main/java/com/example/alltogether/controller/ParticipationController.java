@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,11 +66,19 @@ public class ParticipationController {
             @RequestParam Long userId,
             @RequestParam Long placeId,
             @RequestParam ParticipationStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate participationDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate participationDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime participationTime) {
         try {
             ParticipationDTO participationDTO;
-            if (participationDate != null) {
-                participationDTO = participationService.createParticipation(userId, placeId, status, participationDate);
+            if (participationDate != null || participationTime != null) {
+                // Si l'heure est fournie, appeler la surcharge qui accepte l'heure
+                if (participationTime != null) {
+                    // Si la date est manquante, utiliser aujourd'hui
+                    LocalDate dateToUse = participationDate != null ? participationDate : LocalDate.now();
+                    participationDTO = participationService.createParticipation(userId, placeId, status, dateToUse, participationTime);
+                } else {
+                    participationDTO = participationService.createParticipation(userId, placeId, status, participationDate);
+                }
             } else {
                 participationDTO = participationService.createParticipation(userId, placeId, status);
             }
@@ -111,8 +120,8 @@ public class ParticipationController {
     public ResponseEntity<ParticipationDTO> getUserParticipationForPlaceToday(
             @PathVariable Long userId,
             @PathVariable Long placeId) {
-        return participationService.getUserParticipationForPlaceToday(userId, placeId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    return participationService.getUserParticipationForPlaceToday(userId, placeId)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.noContent().build());
     }
 }

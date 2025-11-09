@@ -1,6 +1,7 @@
 package com.example.alltogether.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class City {
     private float longitude;
 
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Place> places = new ArrayList<>();
 
     @Column(name = "image_url")

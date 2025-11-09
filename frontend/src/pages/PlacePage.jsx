@@ -7,6 +7,7 @@ import API_CONFIG from '../config/apiConfig';
 import { placeService } from '../services/placeService';
 import { participationService } from '../services/participationService';
 import { useParticipation } from '../contexts/ParticipationContext';
+import favoriteService from '../services/favoriteService';
 
 // Configuration de l'icône Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -36,6 +37,10 @@ function PlacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [participationLoading, setParticipationLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const [arrivalTimeInput, setArrivalTimeInput] = useState('');
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const isLoggedIn = () => {
     return sessionStorage.getItem('jwt_token') !== null;
@@ -58,6 +63,7 @@ function PlacePage() {
     loadPlaceData();
   }, [placeId]);
 
+
   // Écouter les changements de participation depuis d'autres pages (ex: profil)
   useEffect(() => {
     if (participationTrigger > 0 && place) {
@@ -75,6 +81,22 @@ function PlacePage() {
       const placeData = await placeService.getPlaceById(placeId);
       setPlace(placeData);
 
+      // Charger l'état favoris si connecté
+      if (isLoggedIn()) {
+        try {
+          setFavLoading(true);
+          const favs = await favoriteService.getMyFavorites();
+          const found = favs.some(f => f.id === placeData.id);
+          setIsFavorite(found);
+        } catch (e) {
+          console.warn('Impossible de charger les favoris', e);
+        } finally {
+          setFavLoading(false);
+        }
+      } else {
+        setIsFavorite(false);
+      }
+
       // Charger les participations
       await loadParticipations();
     } catch (err) {
@@ -82,6 +104,30 @@ function PlacePage() {
       setError(err.message || 'Erreur lors du chargement du lieu');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!isLoggedIn()) {
+      alert('Vous devez être connecté pour ajouter aux favoris');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setFavLoading(true);
+      if (isFavorite) {
+        await favoriteService.removeFavorite(place.id);
+        setIsFavorite(false);
+      } else {
+        await favoriteService.addFavorite(place.id);
+        setIsFavorite(true);
+      }
+    } catch (e) {
+      console.error('Erreur favoris', e);
+      alert(e.message || 'Erreur lors de la gestion des favoris');
+    } finally {
+      setFavLoading(false);
     }
   };
 
@@ -100,18 +146,28 @@ function PlacePage() {
             if (userParticipation) {
               setIsParticipating(true);
               setUserParticipationId(userParticipation.id);
-            } else {
+                // Pré-remplir le champ heure si l'utilisateur a déjà une participation
+                if (userParticipation.arrivalTime) {
+                  const parts = String(userParticipation.arrivalTime).split(':');
+                  setArrivalTimeInput(parts.slice(0,2).join(':'));
+                } else {
+                  setArrivalTimeInput('');
+                }
+              } else {
               setIsParticipating(false);
               setUserParticipationId(null);
-            }
+                setArrivalTimeInput('');
+              }
           } catch (err) {
             console.error('Erreur lors de la vérification de la participation:', err);
             setIsParticipating(false);
             setUserParticipationId(null);
+            setArrivalTimeInput('');
           }
         } else {
           setIsParticipating(false);
           setUserParticipationId(null);
+          setArrivalTimeInput('');
         }
       } else {
         // Si pas connecté, réinitialiser l'état
@@ -130,44 +186,61 @@ function PlacePage() {
       return;
     }
 
-    try {
-      setParticipationLoading(true);
-
-      if (isParticipating) {
-        // Annuler la participation
+    // Si l'utilisateur est déjà inscrit -> annuler immédiatement
+    if (isParticipating) {
+      try {
+        setParticipationLoading(true);
         await participationService.cancelParticipation(userParticipationId);
         setIsParticipating(false);
         setUserParticipationId(null);
-      } else {
-        // Participer
-        const result = await participationService.participate(placeId);
-        setIsParticipating(true);
-        setUserParticipationId(result.id);
+        // Recharger et notifier
+        await loadParticipations();
+        notifyParticipationChange();
+      } catch (err) {
+        console.error("Erreur lors de l'annulation de participation:", err);
+        alert(err.message || 'Erreur lors de l\'annulation');
+      } finally {
+        setParticipationLoading(false);
       }
+      return;
+    }
 
-      // Recharger les participations pour mettre à jour le tableau
+    // Si le time picker n'est pas visible, on l'affiche (premier clic)
+    if (!showTimePicker) {
+      setShowTimePicker(true);
+      return;
+    }
+
+    // Si on arrive ici, le picker est visible et on doit confirmer la participation
+    try {
+      setParticipationLoading(true);
+      const timeToSend = (arrivalTimeInput && arrivalTimeInput.trim()) ? arrivalTimeInput.trim() : null;
+      const result = await participationService.participate(placeId, timeToSend);
+      setIsParticipating(true);
+      setUserParticipationId(result.id);
+
+      // Fermer le picker après confirmation
+      setShowTimePicker(false);
+
+      // Recharger et notifier
       await loadParticipations();
-      
-      // Notifier le contexte pour mettre à jour la page de profil
       notifyParticipationChange();
     } catch (err) {
       console.error('Erreur lors de la participation:', err);
-      
-      // Si l'erreur indique que les infos utilisateur sont manquantes, 
-      // proposer de se reconnecter
       if (err.message && err.message.includes('utilisateur manquant')) {
-        const shouldReconnect = confirm(
-          'Vos informations de session sont incomplètes. Voulez-vous vous reconnecter ?'
-        );
-        if (shouldReconnect) {
-          navigate('/login');
-        }
+        const shouldReconnect = confirm('Vos informations de session sont incomplètes. Voulez-vous vous reconnecter ?');
+        if (shouldReconnect) navigate('/login');
       } else {
         alert(err.message || 'Erreur lors de la participation');
       }
     } finally {
       setParticipationLoading(false);
     }
+  };
+
+  const handleCancelPicker = () => {
+    // Ne pas supprimer l'heure saisie (pratique pour réutiliser)
+    setShowTimePicker(false);
   };
 
   const getCategoryLabel = (category) => {
@@ -296,12 +369,32 @@ function PlacePage() {
           </span>
         </div>
 
-        <h1 style={{
-          margin: '6px 0 6px 0',
-          fontSize: '2rem',
-          color: 'white',
-          fontWeight: '700'
-        }}>{place.name}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <h1 style={{
+            margin: '6px 0 6px 0',
+            fontSize: '2rem',
+            color: 'white',
+            fontWeight: '700'
+          }}>{place.name}</h1>
+
+          <div>
+            <button
+              onClick={handleToggleFavorite}
+              disabled={favLoading}
+              aria-pressed={isFavorite}
+              title={isFavorite ? 'Retirer des favoris' : "Ajouter aux favoris"}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: isFavorite ? '#ff6b6b' : 'white',
+                fontSize: '1.8rem',
+                cursor: 'pointer'
+              }}
+            >
+              {isFavorite ? '❤️' : '🤍'}
+            </button>
+          </div>
+        </div>
 
         <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '1.1rem' }}>📍</span>
@@ -527,6 +620,11 @@ function PlacePage() {
                       <div style={{ fontWeight: 'bold', fontSize: '1rem', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {participant.userFirstName} {participant.userLastName}
                       </div>
+                      {participant.arrivalTime && (
+                        <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '6px' }}>
+                          Arrivée prévue: {String(participant.arrivalTime).split(':').slice(0,2).join(':')}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -560,37 +658,106 @@ function PlacePage() {
             </div>
           )}
 
-          {/* Bouton de participation */}
+          {/* Bouton de participation (clique pour ouvrir le sélecteur) */}
           <div>
-            <button
-              onClick={handleParticipate}
-              disabled={participationLoading}
-              style={{
-                padding: '15px',
-                backgroundColor: isParticipating ? '#dc3545' : '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: participationLoading ? 'not-allowed' : 'pointer',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                transition: 'all 0.3s',
-                opacity: participationLoading ? 0.6 : 1,
-                width: '100%'
-              }}
-              onMouseOver={(e) => {
-                if (!participationLoading) {
-                  e.target.style.backgroundColor = isParticipating ? '#c82333' : '#218838';
-                  e.target.style.transform = 'scale(1.02)';
-                }
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = isParticipating ? '#dc3545' : '#28a745';
-                e.target.style.transform = 'scale(1)';
-              }}
-            >
-              {participationLoading ? 'Chargement...' : isParticipating ? 'Annuler ma participation' : 'J\'y vais aujourd\'hui !'}
-            </button>
+            {showTimePicker && !isParticipating ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{
+                  padding: '10px',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}>
+                  <label htmlFor="arrival-time" style={{fontSize: '0.95rem', color: '#333', minWidth: '1px'}}>Heure d'arrivée (optionnel)</label>
+                  <input
+                    id="arrival-time"
+                    type="time"
+                    value={arrivalTimeInput}
+                    onChange={(e) => setArrivalTimeInput(e.target.value)}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #ccd0d5',
+                      background: '#ffffff',
+                      color: '#000000',
+                      fontSize: '0.95rem'
+                    }}
+                    disabled={participationLoading}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={handleParticipate}
+                    disabled={participationLoading}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      backgroundColor: '#28a745',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: participationLoading ? 'not-allowed' : 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '600'
+                    }}
+                  >
+                    {participationLoading ? 'Chargement...' : 'Confirmer ma venue'}
+                  </button>
+
+                  <button
+                    onClick={handleCancelPicker}
+                    disabled={participationLoading}
+                    style={{
+                      padding: '12px 14px',
+                      backgroundColor: '#6c757d',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: participationLoading ? 'not-allowed' : 'pointer',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <button
+                  onClick={handleParticipate}
+                  disabled={participationLoading}
+                  style={{
+                    padding: '15px',
+                    backgroundColor: isParticipating ? '#dc3545' : '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: participationLoading ? 'not-allowed' : 'pointer',
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    transition: 'all 0.3s',
+                    opacity: participationLoading ? 0.6 : 1,
+                    width: '100%'
+                  }}
+                  onMouseOver={(e) => {
+                    if (!participationLoading) {
+                      e.target.style.backgroundColor = isParticipating ? '#c82333' : '#218838';
+                      e.target.style.transform = 'scale(1.02)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = isParticipating ? '#dc3545' : '#28a745';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  {participationLoading ? 'Chargement...' : isParticipating ? 'Annuler ma participation' : 'J\'y vais aujourd\'hui !'}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Petite carte */}

@@ -49,7 +49,7 @@ async function ensureUserData() {
 // Service pour les participations
 export const participationService = {
   // "J'y vais aujourd'hui"
-  async participate(placeId) {
+  async participate(placeId, participationTime) {
     // Vérifier le token JWT
     const token = sessionStorage.getItem('jwt_token');
     
@@ -73,7 +73,12 @@ export const participationService = {
     }
     
     // Construire l'URL avec les paramètres de requête
-    const url = `${API_CONFIG.ENDPOINTS.PARTICIPATIONS.CREATE}?userId=${userId}&placeId=${placeId}&status=INSCRIT`;
+    let url = `${API_CONFIG.ENDPOINTS.PARTICIPATIONS.CREATE}?userId=${userId}&placeId=${placeId}&status=INSCRIT`;
+    // participationTime attendu au format HH:mm (optionnel)
+    if (participationTime) {
+      // S'assurer du format HH:mm (si input fournit HH:mm), sinon ajouter au format
+      url += `&participationTime=${encodeURIComponent(participationTime)}`;
+    }
     
     const response = await fetch(url, {
       method: 'POST',
@@ -163,25 +168,31 @@ export const participationService = {
 
   // Vérifier si l'utilisateur participe déjà aujourd'hui à un lieu
   async checkUserParticipationToday(userId, placeId) {
-    const response = await fetch(
-      `${API_CONFIG.BASE_URL}/participations/user/${userId}/place/${placeId}/today`,
-      {
+    try {
+      const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.USER_PLACE_TODAY(userId, placeId), {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('jwt_token')}`,
         },
-      }
-    );
+      });
 
-    if (response.status === 404) {
-      // L'utilisateur ne participe pas
+      if (response.status === 404 || response.status === 204) {
+        // L'utilisateur ne participe pas
+        return null;
+      }
+
+      if (!response.ok) {
+        // Lire le message d'erreur si possible
+        let txt = '';
+        try { txt = await response.text(); } catch (e) { /* ignore */ }
+        throw new Error(txt || 'Erreur lors de la vérification de la participation');
+      }
+
+      return response.json();
+    } catch (err) {
+      // En cas d'erreur réseau ou d'annulation, retourner null pour indiquer "pas de participation"
+      // Evite les logs bruyants dans la console de l'utilisateur.
       return null;
     }
-
-    if (!response.ok) {
-      throw new Error('Erreur lors de la vérification de la participation');
-    }
-
-    return response.json();
   },
 };
 

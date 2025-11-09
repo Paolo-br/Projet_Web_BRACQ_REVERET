@@ -4,6 +4,9 @@ import com.example.alltogether.dto.UserProfileDTO;
 import com.example.alltogether.dto.UserUpdateDTO;
 import com.example.alltogether.service.ImageService;
 import com.example.alltogether.service.UserProfileService;
+import com.example.alltogether.service.FavoriteService;
+import com.example.alltogether.model.Place;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,11 +24,13 @@ public class ProfileController {
 
     private final UserProfileService userProfileService;
     private final ImageService imageService;
+    private final FavoriteService favoriteService;
 
     @Autowired
-    public ProfileController(UserProfileService userProfileService, ImageService imageService) {
+    public ProfileController(UserProfileService userProfileService, ImageService imageService, FavoriteService favoriteService) {
         this.userProfileService = userProfileService;
         this.imageService = imageService;
+        this.favoriteService = favoriteService;
     }
 
     // GET /api/profile/me
@@ -101,5 +106,41 @@ public class ProfileController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    // GET /api/profile/me/favorites
+    @GetMapping("/me/favorites")
+    public ResponseEntity<List<Place>> getMyFavorites() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserProfileDTO> current = userProfileService.getUserByEmail(email);
+        if (current.isEmpty()) return ResponseEntity.notFound().build();
+        Long id = current.get().getId();
+        List<Place> favs = favoriteService.getFavoritesForUser(id);
+        return ResponseEntity.ok(favs);
+    }
+
+    // POST /api/profile/me/favorites/{placeId}
+    @PostMapping("/me/favorites/{placeId}")
+    public ResponseEntity<Void> addFavorite(@PathVariable Long placeId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserProfileDTO> current = userProfileService.getUserByEmail(email);
+        if (current.isEmpty()) return ResponseEntity.notFound().build();
+        Long id = current.get().getId();
+        favoriteService.addFavorite(id, placeId);
+        return ResponseEntity.ok().build();
+    }
+
+    // DELETE /api/profile/me/favorites/{placeId}
+    @DeleteMapping("/me/favorites/{placeId}")
+    public ResponseEntity<Void> removeFavorite(@PathVariable Long placeId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserProfileDTO> current = userProfileService.getUserByEmail(email);
+        if (current.isEmpty()) return ResponseEntity.notFound().build();
+        Long id = current.get().getId();
+        favoriteService.removeFavorite(id, placeId);
+        return ResponseEntity.noContent().build();
     }
 }

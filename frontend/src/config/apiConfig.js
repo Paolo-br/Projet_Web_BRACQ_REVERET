@@ -49,6 +49,7 @@ const API_CONFIG = {
       CREATE: `${API_BASE_URL}/participations`,
       DELETE: (participationId) => `${API_BASE_URL}/participations/${participationId}`,
       PARTICIPATE: (placeId) => `${API_BASE_URL}/participations/${placeId}`,
+      USER_PLACE_TODAY: (userId, placeId) => `${API_BASE_URL}/participations/user/${userId}/place/${placeId}/today`,
     },
     USER: {
       PROFILE: `${API_BASE_URL}/profile/me`,
@@ -59,6 +60,11 @@ const API_CONFIG = {
       UPLOAD_MY_PHOTO: `${API_BASE_URL}/profile/me/photo`,
       UPDATE_PASSWORD: `${API_BASE_URL}/users/{id}/password`,
       BY_ID: (id) => `${API_BASE_URL}/users/${id}`,
+      FAVORITES: {
+        GET_MY: `${API_BASE_URL}/profile/me/favorites`,
+        ADD: (placeId) => `${API_BASE_URL}/profile/me/favorites/${placeId}`,
+        REMOVE: (placeId) => `${API_BASE_URL}/profile/me/favorites/${placeId}`
+      },
     },
   },
 };

@@ -3,6 +3,7 @@ package com.example.alltogether.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -32,6 +33,9 @@ public class Participation {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "arrival_time")
+    private LocalTime arrivalTime;
 
     public enum ParticipationStatus {
         INSCRIT,
@@ -77,4 +81,7 @@ public class Participation {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalTime getArrivalTime() { return arrivalTime; }
+    public void setArrivalTime(LocalTime arrivalTime) { this.arrivalTime = arrivalTime; }
 }

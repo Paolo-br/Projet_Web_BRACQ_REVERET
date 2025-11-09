@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,8 +128,57 @@ public class ParticipationService {
                 participation.getPlace().getName(),
                 participation.getParticipationDate(),
                 participation.getCreatedAt(),
+                participation.getArrivalTime(),
                 ParticipationStatus.valueOf(participation.getStatus().name())
         );
+    }
+    
+    // Nouvelle surcharge permettant de préciser une heure d'arrivée optionnelle
+    @Transactional
+    public ParticipationDTO createParticipation(Long userId, Long placeId, ParticipationStatus status, LocalDate participationDate, LocalTime arrivalTime) {
+        // Logging pour debug
+        System.out.println("=== DEBUG CREATE PARTICIPATION (with time) ===");
+        System.out.println("User ID: " + userId);
+        System.out.println("Place ID: " + placeId);
+        System.out.println("Status: " + status);
+        System.out.println("Date: " + participationDate);
+        System.out.println("Arrival time: " + arrivalTime);
+
+        // Vérifier si l'utilisateur existe
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> {
+                    System.out.println("❌ Utilisateur non trouvé: " + userId);
+                    return new RuntimeException("Utilisateur non trouvé");
+                });
+        System.out.println("✅ Utilisateur trouvé: " + user.getEmail());
+
+        // Vérifier si le lieu existe
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> {
+                    System.out.println("❌ Lieu non trouvé: " + placeId);
+                    return new RuntimeException("Lieu non trouvé");
+                });
+        System.out.println("✅ Lieu trouvé: " + place.getName());
+
+        // Vérifier s'il n'y a pas déjà une participation
+        if (participationRepository.existsByUserIdAndPlaceIdAndParticipationDate(userId, placeId, participationDate)) {
+            System.out.println("❌ Participation déjà existante");
+            throw new RuntimeException("Une participation existe déjà pour cet utilisateur, lieu et date");
+        }
+
+        // Créer la participation
+        Participation participation = new Participation();
+        participation.setUser(user);
+        participation.setPlace(place);
+        participation.setParticipationDate(participationDate != null ? participationDate : LocalDate.now());
+        participation.setStatus(com.example.alltogether.model.Participation.ParticipationStatus.valueOf(status.name()));
+        participation.setArrivalTime(arrivalTime);
+
+        System.out.println("✅ Création participation... (with time)");
+        Participation saved = participationRepository.save(participation);
+        System.out.println("✅ Participation créée: " + saved.getId());
+
+        return toDTO(saved);
     }
     @Transactional
     public ParticipationDTO createParticipation(Long userId, Long placeId, ParticipationStatus status, LocalDate participationDate) {

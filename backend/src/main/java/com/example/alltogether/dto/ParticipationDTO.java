@@ -2,6 +2,7 @@ package com.example.alltogether.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ParticipationDTO {
     private Long id;
@@ -14,6 +15,7 @@ public class ParticipationDTO {
     private String placeName;
     private LocalDate participationDate;
     private LocalDateTime createdAt;
+    private LocalTime arrivalTime;
     private ParticipationStatus status;
 
     public enum ParticipationStatus {
@@ -24,7 +26,7 @@ public class ParticipationDTO {
     public ParticipationDTO() {}
 
     public ParticipationDTO(Long id, Long userId, String userName, Long placeId, String placeName,
-                            LocalDate participationDate, LocalDateTime createdAt, ParticipationStatus status) {
+                            LocalDate participationDate, LocalDateTime createdAt, LocalTime arrivalTime, ParticipationStatus status) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -32,12 +34,13 @@ public class ParticipationDTO {
         this.placeName = placeName;
         this.participationDate = participationDate;
         this.createdAt = createdAt;
+        this.arrivalTime = arrivalTime;
         this.status = status;
     }
     
     public ParticipationDTO(Long id, Long userId, String userName, String userFirstName, String userLastName, 
                             String userEmail, Long placeId, String placeName,
-                            LocalDate participationDate, LocalDateTime createdAt, ParticipationStatus status) {
+                            LocalDate participationDate, LocalDateTime createdAt, LocalTime arrivalTime, ParticipationStatus status) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -48,6 +51,7 @@ public class ParticipationDTO {
         this.placeName = placeName;
         this.participationDate = participationDate;
         this.createdAt = createdAt;
+        this.arrivalTime = arrivalTime;
         this.status = status;
     }
 
@@ -81,6 +85,9 @@ public class ParticipationDTO {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalTime getArrivalTime() { return arrivalTime; }
+    public void setArrivalTime(LocalTime arrivalTime) { this.arrivalTime = arrivalTime; }
 
     public ParticipationStatus getStatus() { return status; }
     public void setStatus(ParticipationStatus status) { this.status = status; }
