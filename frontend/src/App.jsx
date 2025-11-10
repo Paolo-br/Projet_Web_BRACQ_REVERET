@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Activities from "./pages/Activities";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import CityPage from "./pages/CityPage";
 import PlacePage from "./pages/PlacePage";
@@ -26,6 +27,7 @@ function App() {
           <Route path="/user/:userId" element={<UserProfileView />} />
           <Route path="/login" element={<Login />} />
         </Routes>
+        <Footer />
       </ParticipationProvider>
     </BrowserRouter>
   );
