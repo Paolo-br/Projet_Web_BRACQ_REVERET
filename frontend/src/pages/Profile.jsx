@@ -9,6 +9,7 @@ import { participationService } from "../services/participationService";
 import favoriteService from "../services/favoriteService";
 import API_CONFIG from "../config/apiConfig";
 import { useParticipation } from "../contexts/ParticipationContext";
+import RoleBadge from "../components/RoleBadge";
 
 function Profile() {
   const navigate = useNavigate();
@@ -399,6 +400,18 @@ function Profile() {
             <p>Chargement...</p>
           ) : (
             <div>
+              {/* Affichage des rôles */}
+              {profile.roles && profile.roles.length > 0 && (
+                <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
+                  <strong style={{ minWidth: "120px", color: "#555" }}>Rôles :</strong>
+                  <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                    {Array.from(profile.roles).map((role) => (
+                      <RoleBadge key={role} role={role} size="small" />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               <div style={{ margin: "10px 0", display: "flex", alignItems: "center" }}>
                 <strong style={{ minWidth: "120px", color: "#555" }}>Prénom :</strong>
                 {editing ? (

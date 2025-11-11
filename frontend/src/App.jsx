@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import CityPage from "./pages/CityPage";
 import PlacePage from "./pages/PlacePage";
 import UserProfileView from "./pages/UserProfileView";
+import AdminPanel from "./pages/AdminPanel";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { ParticipationProvider } from "./contexts/ParticipationContext";
 
 function App() {
@@ -26,6 +28,14 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/user/:userId" element={<UserProfileView />} />
           <Route path="/login" element={<Login />} />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminPanel />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
         <Footer />
       </ParticipationProvider>

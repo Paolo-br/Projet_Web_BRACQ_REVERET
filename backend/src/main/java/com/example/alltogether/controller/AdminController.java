@@ -7,6 +7,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Contrôleur REST pour la gestion des administrateurs.
+ *
+ * Permet de :
+ * - Promouvoir un utilisateur en administrateur
+ * - Rétrograder un administrateur en utilisateur simple
+ * - Lister tous les administrateurs
+ * - Vérifier si un utilisateur est administrateur
+ */
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -17,6 +26,9 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+    /**
+     * Promeut un utilisateur au rôle d'administrateur.
+     */
     @PostMapping("/users/{userId}/promote")
     public ResponseEntity<String> promoteToAdmin(@PathVariable Long userId) {
         try {
@@ -27,6 +39,9 @@ public class AdminController {
         }
     }
 
+    /**
+     * Rétrograde un administrateur au rôle d'utilisateur simple.
+     */
     @PostMapping("/users/{userId}/demote")
     public ResponseEntity<String> demoteFromAdmin(@PathVariable Long userId) {
         try {
@@ -37,11 +52,17 @@ public class AdminController {
         }
     }
 
+    /**
+     * Récupère la liste de tous les administrateurs.
+     */
     @GetMapping("/admins")
     public List<UserProfileDTO> getAllAdmins() {
         return roleService.getAllAdmins();
     }
 
+    /**
+     * Vérifie si un utilisateur possède le rôle d'administrateur.
+     */
     @GetMapping("/users/{userId}/is-admin")
     public ResponseEntity<Boolean> isUserAdmin(@PathVariable Long userId) {
         try {

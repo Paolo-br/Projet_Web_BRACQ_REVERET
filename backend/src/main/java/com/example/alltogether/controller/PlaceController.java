@@ -31,8 +31,9 @@ public class PlaceController {
         this.placeService = placeService;
     }
 
-
-    // GET /api/places/{id}
+    /**
+     * Récupère un lieu par son ID.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<PlaceDTO> getPlaceById(@PathVariable Long id) {
         return placeService.getPlaceById(id)
@@ -40,19 +41,26 @@ public class PlaceController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // GET /api/places/city/{cityId}
+    /**
+     * Récupère tous les lieux d'une ville spécifique.
+     */
     @GetMapping("/city/{cityId}")
     public List<PlaceDTO> getPlacesByCityId(@PathVariable Long cityId) {
         return placeService.getPlacesByCityId(cityId);
     }
 
-    // GET /api/places/category/{category}
+    /**
+     * Récupère tous les lieux d'une catégorie donnée.
+     */
     @GetMapping("/category/{category}")
     public List<PlaceDTO> getPlacesByCategory(@PathVariable String category) {
         return placeService.getPlacesByCategory(category);
     }
 
-    // POST /api/places
+    /**
+     * Crée un nouveau lieu.
+     * Valide les données reçues via le DTO.
+     */
     @PostMapping
     public ResponseEntity<?> createPlace(@Valid @RequestBody PlaceCreateDTO placeCreateDTO, BindingResult bindingResult) {
         try {
@@ -75,7 +83,10 @@ public class PlaceController {
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
         }
     }
-    // PUT /api/places/{id}
+
+    /**
+     * Met à jour les informations d'un lieu existant.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<PlaceDTO> updatePlace(@PathVariable Long id, @RequestBody PlaceDTO dto) {
         return placeService.updatePlaceFromDTO(id, dto)
@@ -83,13 +94,18 @@ public class PlaceController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // DELETE /api/places/{id}
+    /**
+     * Supprime un lieu par son ID.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
         placeService.deletePlace(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Récupère la liste des lieux, avec filtrage optionnel par catégorie et/ou ville.
+     */
     @GetMapping
     public ResponseEntity<List<PlaceDTO>> getPlaces(
             @RequestParam(required = false) String category,

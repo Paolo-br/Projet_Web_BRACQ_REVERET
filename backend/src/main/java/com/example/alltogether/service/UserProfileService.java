@@ -163,7 +163,10 @@ public class UserProfileService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getAge(),
-                user.getCurrentCity()
+                user.getCurrentCity(),
+                user.getCountryOrigin(),
+                user.getProfilePictureUrl(),
+                user.getRoles()
         );
     }
 

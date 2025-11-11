@@ -12,13 +12,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * Contrôleur pour servir les images statiques depuis le classpath
+ * Contrôleur pour servir les images statiques depuis le classpath.
+ *
+ * Gère le chargement des images depuis :
+ * - Le classpath (resources embarquées)
+ * - Le filesystem (pour le développement)
+ *
+ * Supporte les images de villes, de lieux et autres images statiques.
  */
 @RestController
 @RequestMapping("/uploads")
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://localhost:4200"})
 public class StaticImageController {
 
+    /**
+     * Sert une image depuis le dossier uploads/.
+     */
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getCityImage(@PathVariable String filename) {
         try {
@@ -54,6 +63,10 @@ public class StaticImageController {
         }
     }
 
+    /**
+     * Sert une image de ville depuis le dossier uploads/city/.
+     * Essaie d'abord le classpath, puis le filesystem en développement.
+     */
     @GetMapping("/city/{filename:.+}")
     public ResponseEntity<Resource> getCityImage2(@PathVariable String filename) {
         try {
@@ -105,6 +118,10 @@ public class StaticImageController {
         }
     }
 
+    /**
+     * Sert une image de lieu depuis le dossier uploads/places/.
+     * Essaie d'abord le classpath, puis le filesystem en développement.
+     */
     @GetMapping("/places/{filename:.+}")
     public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename) {
         try {
@@ -156,6 +173,9 @@ public class StaticImageController {
         }
     }
 
+    /**
+     * Détermine le type d'un fichier image selon son extension.
+     */
     private String getContentType(String filename) {
         String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
         return switch (extension) {

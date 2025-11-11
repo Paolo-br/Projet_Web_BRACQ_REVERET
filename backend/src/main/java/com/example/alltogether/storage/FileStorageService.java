@@ -21,7 +21,6 @@ public class FileStorageService {
     private final Path rootLocation;
 
     // Permet de configurer le répertoire d’upload dans application.properties :
-    // exemple : file.upload-dir=uploads
     public FileStorageService(@Value("${file.upload-dir:uploads}") String uploadDir) {
         this.rootLocation = Paths.get(uploadDir);
     }
@@ -33,16 +32,13 @@ public class FileStorageService {
             if (!Files.exists(rootLocation)) {
                 Files.createDirectories(rootLocation);
             }
-            // Log the absolute path used for uploads so developers can debug where files are stored
             System.out.println("[FileStorageService] upload root: " + rootLocation.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new RuntimeException("Impossible d’initialiser le dossier de stockage", e);
         }
     }
 
-    // ==========================================
     // Sauvegarde d’un fichier
-    // ==========================================
     public String store(MultipartFile file) {
         try {
             validateFile(file);
@@ -68,12 +64,10 @@ public class FileStorageService {
         }
     }
 
-    // ==========================================
+
     //  Suppression d’un fichier
-    // ==========================================
     public void deleteFile(String fileUrl) {
         try {
-            // fileUrl = "/uploads/nom.jpg" → on extrait juste le nom du fichier
             String filename = Paths.get(fileUrl).getFileName().toString();
             Path filePath = rootLocation.resolve(filename);
 
@@ -121,9 +115,7 @@ public class FileStorageService {
         }
     }
 
-    // ==========================================
     // Validation des fichiers
-    // ==========================================
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new RuntimeException("Fichier vide");

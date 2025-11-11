@@ -8,6 +8,7 @@ import com.example.alltogether.model.City;
 import com.example.alltogether.model.Place;
 import com.example.alltogether.repository.CityRepository;
 import com.example.alltogether.repository.PlaceRepository;
+import com.example.alltogether.repository.ParticipationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,9 @@ class PlaceServiceTest {
 
     @Mock
     private CityRepository cityRepository;
+
+    @Mock
+    private ParticipationRepository participationRepository;
 
     @InjectMocks
     private PlaceService placeService;
@@ -75,6 +81,7 @@ class PlaceServiceTest {
         when(cityRepository.findById(1L)).thenReturn(Optional.of(city));
         when(placeRepository.existsByName("Tour Eiffel")).thenReturn(false);
         when(placeRepository.save(any(Place.class))).thenReturn(place);
+        when(participationRepository.findByPlaceIdAndParticipationDate(anyLong(), any())).thenReturn(Collections.emptyList());
 
         // Act
         PlaceDTO result = placeService.createPlace(placeCreateDTO);
@@ -121,6 +128,7 @@ class PlaceServiceTest {
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
         when(cityRepository.findById(1L)).thenReturn(Optional.of(city));
         when(placeRepository.save(any(Place.class))).thenReturn(place);
+        when(participationRepository.findByPlaceIdAndParticipationDate(anyLong(), any())).thenReturn(Collections.emptyList());
 
         // Act
         Optional<PlaceDTO> result = placeService.updatePlaceFromDTO(1L, placeDTO);
@@ -163,6 +171,7 @@ class PlaceServiceTest {
     void getPlaceById_ShouldReturnPlace_WhenPlaceExists() {
         // Arrange
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(participationRepository.findByPlaceIdAndParticipationDate(anyLong(), any())).thenReturn(Collections.emptyList());
 
         // Act
         Optional<PlaceDTO> result = placeService.getPlaceById(1L);

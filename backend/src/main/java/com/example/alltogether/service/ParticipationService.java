@@ -124,6 +124,7 @@ public class ParticipationService {
                 participation.getUser().getFirstName(),
                 participation.getUser().getLastName(),
                 participation.getUser().getEmail(),
+                participation.getUser().getProfilePictureUrl(),
                 participation.getPlace().getId(),
                 participation.getPlace().getName(),
                 participation.getParticipationDate(),

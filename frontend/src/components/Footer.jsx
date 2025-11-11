@@ -1,5 +1,9 @@
 import React from 'react';
 
+/**
+ * Composant Footer affiché en bas de toutes les pages.
+ * Affiche les informations de copyright et les crédits du projet.
+ */
 const Footer = () => {
   return (
     <footer style={{

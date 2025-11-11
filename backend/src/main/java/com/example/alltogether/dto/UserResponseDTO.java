@@ -1,5 +1,7 @@
 package com.example.alltogether.dto;
 
+import java.util.Set;
+
 public class UserResponseDTO {
     private Long id;
     private String firstName;
@@ -7,6 +9,9 @@ public class UserResponseDTO {
     private String email;
     private int age;
     private String currentCity;
+    private String countryOrigin;
+    private String profilePictureUrl;
+    private Set<String> roles;
 
     // Constructeurs
     public UserResponseDTO() {}
@@ -18,6 +23,19 @@ public class UserResponseDTO {
         this.email = email;
         this.age = age;
         this.currentCity = currentCity;
+    }
+
+    public UserResponseDTO(Long id, String firstName, String lastName, String email, int age, String currentCity, 
+                           String countryOrigin, String profilePictureUrl, Set<String> roles) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.age = age;
+        this.currentCity = currentCity;
+        this.countryOrigin = countryOrigin;
+        this.profilePictureUrl = profilePictureUrl;
+        this.roles = roles;
     }
 
     // Getters et Setters
@@ -38,4 +56,13 @@ public class UserResponseDTO {
 
     public String getCurrentCity() { return currentCity; }
     public void setCurrentCity(String currentCity) { this.currentCity = currentCity; }
+
+    public String getCountryOrigin() { return countryOrigin; }
+    public void setCountryOrigin(String countryOrigin) { this.countryOrigin = countryOrigin; }
+
+    public String getProfilePictureUrl() { return profilePictureUrl; }
+    public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
+
+    public Set<String> getRoles() { return roles; }
+    public void setRoles(Set<String> roles) { this.roles = roles; }
 }

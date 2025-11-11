@@ -11,5 +11,20 @@ export default defineConfig({
     watch: {
       usePolling: true, // Nécessaire pour le hot-reload dans Docker
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/tests/',
+        '**/*.config.js',
+        '**/main.jsx'
+      ]
+    }
   }
 })

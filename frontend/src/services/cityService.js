@@ -1,8 +1,13 @@
 import API_CONFIG, { getAuthHeaders } from '../config/apiConfig';
 
-// Service pour les villes
+/**
+ * Service pour la gestion des villes.
+ * Permet de récupérer les informations des villes depuis l'API.
+ */
 export const cityService = {
-  // Récupérer toutes les villes
+  /**
+   * Récupère la liste de toutes les villes.
+   */
   async getAllCities() {
     const response = await fetch(API_CONFIG.ENDPOINTS.CITIES.GET_ALL);
 
@@ -13,7 +18,9 @@ export const cityService = {
     return response.json();
   },
 
-  // Récupérer une ville par ID
+  /**
+   * Récupère une ville spécifique par son ID.
+   */
   async getCityById(id) {
     const response = await fetch(API_CONFIG.ENDPOINTS.CITIES.GET_BY_ID(id));
 

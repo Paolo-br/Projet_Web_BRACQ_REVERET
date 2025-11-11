@@ -1,231 +1,127 @@
 # 🌍 Alltogether - Plateforme Erasmus
 
-Application web de gestion de villes et d'activités pour étudiants Erasmus.
+Application web collaborative permettant aux étudiants Erasmus de découvrir, partager et organiser des activités dans différentes villes françaises.
 
-**Stack:** Spring Boot (Backend) + React (Frontend) + PostgreSQL
+**Auteurs :** BRACQ Paolo & REVERET  
+**Formation :** Master Informatique - Polytech Paris-Saclay  
+**Année :** 2024-2025
 
 ---
 
-## 🚀 Démarrage Ultra-Rapide
+## 📋 Technologies
 
-### Pour les nouveaux utilisateurs :
+- **Backend :** Spring Boot 3.5.6 (Java 17)
+- **Frontend :** React 19 + Vite
+- **Base de données :** PostgreSQL 15
+- **Sécurité :** Spring Security + JWT
+- **Cartographie :** Leaflet
+- **Tests :** JUnit 5, Vitest (44 tests au total)
 
-**Windows:**
-```powershell
-.\start-project.ps1
-```
+---
 
-Puis ouvrir **http://localhost:5173** dans votre navigateur.
+## 🚀 Installation et Lancement
 
-**Linux/Mac:**
+### Prérequis
+- Docker Desktop
+- Java JDK 17+
+- Node.js 18+
+- Git
+
+### Méthode 1 : Docker (Recommandé)
+
 ```bash
+# Cloner le projet
+git clone https://github.com/Paolo-br/Projet_Web_BRACQ_REVERET.git
+cd Projet_Web_BRACQ_REVERET
+
+# Lancer tous les services
 docker-compose up --build
 ```
 
----
+**Accès :**
+- Frontend : http://localhost:5173
+- Backend : http://localhost:8080
+- Base de données : localhost:5432
 
-## 📖 Documentation Complète
-
-- **[📘 INSTALLATION.md](INSTALLATION.md)** - Guide complet d'installation et de configuration
-- **[✅ CHECKLIST.md](CHECKLIST.md)** - Vérifications avant de partager le projet
-
----
-
-## ⚡ Démarrage Rapide
-
-### Option 1: Tout avec Docker (Recommandé pour débuter)
+### Méthode 2 : Développement Local
 
 ```bash
-# Démarrer tout le projet
-docker-compose up --build
-
-# Accéder à l'application
-# Frontend: http://localhost:5173
-# Backend:  http://localhost:8080
-# Database: localhost:5432
-```
-
-### Option 2: Développement Local
-
-```bash
-# 1. Démarrer PostgreSQL
+# 1. Base de données
 docker-compose up -d db
 
-# 2. Lancer le backend (dans IntelliJ)
-# Ouvrir AlltogetherApplication.java et cliquer sur Run ▶️
+# 2. Backend (IntelliJ IDEA)
+# Ouvrir AlltogetherApplication.java → Run
 
-# 3. Lancer le frontend
+# 3. Frontend
 cd frontend
-npm install
+npm install --legacy-peer-deps
 npm run dev
 ```
 
 ---
 
-## 📋 Prérequis
-
-- **Docker Desktop** - https://www.docker.com/products/docker-desktop/
-- **Java JDK 17+** - https://adoptium.net/
-- **Node.js 18+** - https://nodejs.org/
-- **IntelliJ IDEA** - https://www.jetbrains.com/idea/ (pour le développement)
-
----
-
-## 🔧 Ports Utilisés
-
-| Service | Port | URL |
-|---------|------|-----|
-| Frontend | 5173 | http://localhost:5173 |
-| Backend | 8080 | http://localhost:8080 |
-| PostgreSQL | 5432 | localhost:5432 |
-
----
-
-## 🗄️ Base de Données
-
-**PostgreSQL** (via Docker)
-
-```
-Host:     localhost
-Port:     5432
-Database: alltogether
-Username: postgres
-Password: BaseD@ta2025
-```
-
----
-
-## 📚 Technologies
-
-| Composant | Technologie |
-|-----------|-------------|
-| Backend | Spring Boot 3.5.6 |
-| Frontend | React 19 + Vite |
-| Database | PostgreSQL 15 |
-| Security | JWT + Spring Security |
-| ORM | Spring Data JPA |
-| Maps | Leaflet |
-
----
-
-## 🛠️ Commandes Utiles
-
-```bash
-# Démarrer tout
-docker-compose up --build
-
-# Arrêter tout
-docker-compose down
-
-# Voir les logs
-docker-compose logs -f
-
-# Redémarrer un service
-docker-compose restart backend
-
-# Reset complet de la base de données
-docker-compose down -v
-docker-compose up -d db
-```
-
----
-
-## 📁 Structure du Projet
-
-```
-Alltogether/
-├── backend/              # Spring Boot (Java)
-│   ├── src/main/java/   # Code source
-│   └── src/main/resources/
-│       ├── application.properties
-│       ├── application-prod.properties
-│       └── data-*.sql   # Données initiales
-├── frontend/            # React + Vite
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── services/
-│   └── package.json
-└── docker-compose.yml   # Configuration Docker
-```
-
----
-
-## 🐛 Problèmes Courants
-
-### "Cannot connect to database"
-```bash
-# Vérifier que Docker tourne
-docker ps
-
-# Redémarrer PostgreSQL
-docker-compose restart db
-```
-
-### "Port 8080 already in use"
-```bash
-# Windows
-netstat -ano | findstr :8080
-taskkill /PID <PID> /F
-
-# Linux/Mac
-lsof -ti:8080 | xargs kill -9
-```
-
-### Erreurs de compilation Java
-- File → Invalidate Caches → Invalidate and Restart
-- Supprimer `backend/target/`
-- Maven → Reload Project
-
----
-
 ## 🧪 Tests
 
+### Backend (33 tests)
 ```bash
-# Tests backend
 cd backend
 mvn test
-
-# Le projet inclut des tests pour:
-# - Services (PlaceService, ParticipationService, etc.)
-# - Controllers (MapController)
-# - Intégration
 ```
+
+### Frontend (11 tests)
+```bash
+cd frontend
+npm test -- --run
+```
+
+---
+
+## ⚙️ Configuration
+
+### Base de Données
+- **Host :** localhost:5432
+- **Database :** alltogether
+- **Username :** postgres
+- **Password :** BaseD@ta2025
+
+### Données Préchargées
+- 11 villes françaises
+- ~130 lieux (bars, restaurants, parcs, musées, monuments)
+- Photos pour chaque lieu
 
 ---
 
 ## 🔐 Sécurité
 
-- Authentification par **JWT** (JSON Web Tokens)
-- Endpoints publics: `/api/auth/**`, `/api/cities/**`, `/api/places/**`
-- Endpoints protégés: nécessitent un token JWT
+- Authentification JWT
+- Endpoints publics : `/api/auth/**`, `/api/cities/**`, `/api/places/**`
+- Endpoints protégés : requièrent un token JWT valide
+- Mots de passe hashés avec BCrypt
 
 ---
 
-## 🤝 Contribution
+## 🛠️ Résolution de Problèmes
 
-1. Cloner le projet
-2. Créer une branche (`git checkout -b feature/ma-fonctionnalite`)
-3. Commiter les changements (`git commit -m 'Ajout de ma fonctionnalité'`)
-4. Pousser la branche (`git push origin feature/ma-fonctionnalite`)
-5. Ouvrir une Pull Request
+**Erreur de connexion à la base :**
+```bash
+docker-compose restart db
+```
 
----
+**Port déjà utilisé :**
+```powershell
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
+```
 
-## 📞 Support
-
-Consultez **[INSTALLATION.md](INSTALLATION.md)** pour:
-- Instructions détaillées d'installation
-- Résolution de problèmes
-- Configuration avancée
-- Workflow de développement
-
+**Erreur npm :**
+```bash
+cd frontend
+npm install --legacy-peer-deps
+```
 ---
 
 ## 📄 Licence
 
-Ce projet est un projet éducatif dans le cadre d'un cours de développement web.
+Projet éducatif - Polytech Paris-Saclay
 
----
 
-**🎉 Prêt à développer ! Bon code !**

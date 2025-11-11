@@ -134,6 +134,7 @@ function PlacePage() {
   const loadParticipations = async () => {
     try {
       const participationsData = await participationService.getParticipations(placeId);
+      console.log('Participations chargées:', participationsData);
       setParticipants(participationsData);
 
       // Vérifier si l'utilisateur actuel participe en utilisant le nouvel endpoint
@@ -579,7 +580,11 @@ function PlacePage() {
                 {participants.map((participant) => (
                   <div
                     key={participant.id}
-                    onClick={() => navigate(`/user/${participant.userId}`)}
+                    onClick={() => {
+                      if (isLoggedIn()) {
+                        navigate(`/user/${participant.userId}`);
+                      }
+                    }}
                     style={{
                       padding: '16px',
                       backgroundColor: 'white',
@@ -589,23 +594,47 @@ function PlacePage() {
                       alignItems: 'center',
                       gap: '12px',
                       transition: 'transform 0.2s, box-shadow 0.2s',
-                      cursor: 'pointer'
+                      cursor: isLoggedIn() ? 'pointer' : 'default'
                     }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-3px)';
-                      e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                      if (isLoggedIn()) {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                      }
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                      if (isLoggedIn()) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                      }
                     }}
                   >
+                    {participant.userProfilePictureUrl ? (
+                      <img
+                        src={participant.userProfilePictureUrl.startsWith('http') 
+                          ? participant.userProfilePictureUrl 
+                          : `${API_CONFIG.BACKEND_URL}${participant.userProfilePictureUrl}`}
+                        alt={`${participant.userFirstName} ${participant.userLastName}`}
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                          border: '2px solid #007bff'
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
                     <div style={{
                       width: '48px',
                       height: '48px',
                       borderRadius: '50%',
                       backgroundColor: '#007bff',
-                      display: 'flex',
+                      display: participant.userProfilePictureUrl ? 'none' : 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: 'white',
@@ -621,8 +650,48 @@ function PlacePage() {
                         {participant.userFirstName} {participant.userLastName}
                       </div>
                       {participant.arrivalTime && (
-                        <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '6px' }}>
-                          Arrivée prévue: {String(participant.arrivalTime).split(':').slice(0,2).join(':')}
+                        <div style={{ 
+                          fontSize: '0.85rem', 
+                          color: '#666', 
+                          marginTop: '6px', 
+                          display: 'flex', 
+                          flexDirection: isLoggedIn() ? 'row' : 'column',
+                          alignItems: isLoggedIn() ? 'center' : 'flex-start', 
+                          gap: '6px' 
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>Arrivée prévue:</span>
+                            {isLoggedIn() ? (
+                              <span>{String(participant.arrivalTime).split(':').slice(0,2).join(':')}</span>
+                            ) : (
+                              <span style={{ 
+                                filter: 'blur(5px)', 
+                                userSelect: 'none',
+                                pointerEvents: 'none'
+                              }}>
+                                12:34
+                              </span>
+                            )}
+                          </div>
+                          {!isLoggedIn() && (
+                            <a 
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigate('/login');
+                              }}
+                              style={{ 
+                                color: '#007bff',
+                                textDecoration: 'none',
+                                fontSize: '0.8rem',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Connectez-vous
+                            </a>
+                          )}
                         </div>
                       )}
                     </div>

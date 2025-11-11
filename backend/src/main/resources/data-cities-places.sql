@@ -1,10 +1,4 @@
 -- =====================================
--- FICHIER 1 : VILLES ET LIEUX
--- =====================================
--- Ce fichier gère uniquement les villes et les lieux (sans les photos)
--- Les photos sont gérées dans le fichier photos.sql
-
--- =====================================
 -- CITIES
 -- =====================================
 INSERT INTO city (id, name, description, latitude, longitude, image_url) VALUES

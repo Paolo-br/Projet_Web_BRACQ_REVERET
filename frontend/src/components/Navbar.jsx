@@ -4,17 +4,23 @@ import Logo from "../assets/Logo.png";
 import authService from "../services/authService";
 import userService from "../services/userService";
 import API_CONFIG from "../config/apiConfig";
+import RoleBadge from "./RoleBadge";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [userRoles, setUserRoles] = useState([]);
 
   // Vérifier si l'utilisateur est connecté
   useEffect(() => {
     setIsAuthenticated(authService.isAuthenticated());
     if (authService.isAuthenticated()) {
+      // Récupérer les rôles de l'utilisateur
+      const roles = authService.getUserRoles();
+      setUserRoles(roles);
+      
       (async () => {
         try {
           const profile = await userService.getMyProfile();
@@ -168,44 +174,57 @@ function Navbar() {
       {/* Boutons à droite */}
       <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
         {isAuthenticated ? (
-          // Utilisateur connecté : afficher le bouton profil
-          <div style={{ position: "relative" }}>
-            <Link 
-              to="/profile"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                textDecoration: "none",
-                color: "#333"
-              }}
-            >
-              <div
+          // Utilisateur connecté : afficher le bouton profil et les rôles
+          <>
+            {/* Badge admin si l'utilisateur est admin */}
+            {authService.isAdmin() && (
+              <Link 
+                to="/admin"
+                style={{ textDecoration: "none" }}
+                title="Panneau d'administration"
+              >
+                <RoleBadge role="ADMIN" size="small" />
+              </Link>
+            )}
+            
+            <div style={{ position: "relative" }}>
+              <Link 
+                to="/profile"
                 style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  backgroundColor: "#646cff",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
+                  textDecoration: "none",
+                  color: "#333"
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                title="Mon profil"
               >
-                {profilePhoto ? (
-                  <img src={profilePhoto} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; setProfilePhoto(null); }} />
-                ) : (
-                  '👤'
-                )}
-              </div>
-            </Link>
-          </div>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    backgroundColor: "#646cff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    cursor: "pointer",
+                    transition: "transform 0.2s",
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  title="Mon profil"
+                >
+                  {profilePhoto ? (
+                    <img src={profilePhoto} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; setProfilePhoto(null); }} />
+                  ) : (
+                    '👤'
+                  )}
+                </div>
+              </Link>
+            </div>
+          </>
         ) : (
           // Utilisateur non connecté : afficher les liens d'inscription et connexion
           <>

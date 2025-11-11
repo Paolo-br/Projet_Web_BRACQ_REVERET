@@ -11,6 +11,7 @@ public class ParticipationDTO {
     private String userFirstName;
     private String userLastName;
     private String userEmail;
+    private String userProfilePictureUrl;
     private Long placeId;
     private String placeName;
     private LocalDate participationDate;
@@ -39,7 +40,7 @@ public class ParticipationDTO {
     }
     
     public ParticipationDTO(Long id, Long userId, String userName, String userFirstName, String userLastName, 
-                            String userEmail, Long placeId, String placeName,
+                            String userEmail, String userProfilePictureUrl, Long placeId, String placeName,
                             LocalDate participationDate, LocalDateTime createdAt, LocalTime arrivalTime, ParticipationStatus status) {
         this.id = id;
         this.userId = userId;
@@ -47,6 +48,7 @@ public class ParticipationDTO {
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
         this.userEmail = userEmail;
+        this.userProfilePictureUrl = userProfilePictureUrl;
         this.placeId = placeId;
         this.placeName = placeName;
         this.participationDate = participationDate;
@@ -73,6 +75,9 @@ public class ParticipationDTO {
 
     public String getUserEmail() { return userEmail; }
     public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
+    public String getUserProfilePictureUrl() { return userProfilePictureUrl; }
+    public void setUserProfilePictureUrl(String userProfilePictureUrl) { this.userProfilePictureUrl = userProfilePictureUrl; }
 
     public Long getPlaceId() { return placeId; }
     public void setPlaceId(Long placeId) { this.placeId = placeId; }

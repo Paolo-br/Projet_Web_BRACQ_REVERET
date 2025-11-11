@@ -18,15 +18,24 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+/**
+ * Composant d'affichage d'une carte interactive avec Leaflet.
+ * Affiche les villes et/ou les lieux sur une carte OpenStreetMap.
+ * Permet de naviguer vers les pages de détails en cliquant sur les marqueurs.
+ */
 function MapView({ cities, places = [] }) {
   const navigate = useNavigate();
 
-  // Calculer le nombre de lieux par ville
+  /**
+   * Compte le nombre de lieux par ville.
+   */
   const getPlaceCountByCity = (cityId) => {
     return places.filter(place => place.cityId === cityId).length;
   };
 
-  // Calcul du centre de la carte basé sur les villes disponibles
+  /**
+   * Calcule le centre de la carte basé sur la position moyenne des villes.
+   */
   const getMapCenter = () => {
     if (cities.length === 0) return [48.8566, 2.3522]; // Paris par défaut
 
@@ -36,7 +45,9 @@ function MapView({ cities, places = [] }) {
     return [avgLat, avgLng];
   };
 
-  // Calcul du zoom initial basé sur la dispersion des villes
+  /**
+   * Calcule le niveau de zoom initial basé sur la dispersion géographique des villes.
+   */
   const getInitialZoom = () => {
     if (cities.length === 0) return 6;
     if (cities.length === 1) return 10;
@@ -54,6 +65,9 @@ function MapView({ cities, places = [] }) {
     return 4;
   };
 
+  /**
+   * Gère le clic sur un marqueur de ville pour naviguer vers sa page.
+   */
   const handleMarkerClick = (cityName) => {
     navigate(`/city/${encodeURIComponent(cityName)}`);
   };

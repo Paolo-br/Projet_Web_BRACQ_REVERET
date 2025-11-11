@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service de gestion des villes.
+ *
+ * Gère la logique métier pour :
+ * - Récupérer, créer, modifier et supprimer des villes
+ * - Rechercher des villes par nom
+ * - Convertir entre entités et DTOs
+ */
 @Service
 public class CityService {
 
@@ -20,40 +28,52 @@ public class CityService {
         this.cityRepository = cityRepository;
     }
 
-    // GET: Retourne une liste de CityDTO
+    /**
+     * Récupère toutes les villes sous forme de DTOs.
+     */
     public List<CityDTO> getAllCities() {
         return cityRepository.findAll().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // GET: Retourne un Optional<CityDTO>
+    /**
+     * Récupère une ville par son ID.
+     */
     public Optional<CityDTO> getCityById(Long id) {
         return cityRepository.findById(id)
                 .map(this::toDTO);
     }
 
-    // GET: Retourne un Optional<CityDTO> par nom exact
+    /**
+     * Récupère une ville par son nom exact (insensible à la casse).
+     */
     public Optional<CityDTO> getCityByName(String name) {
         return cityRepository.findByNameIgnoreCase(name)
                 .map(this::toDTO);
     }
 
-    // GET: Recherche par nom (retourne une liste de CityDTO)
+    /**
+     * Recherche des villes dont le nom contient la chaîne fournie.
+     */
     public List<CityDTO> searchCitiesByName(String name) {
         return cityRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // POST: Crée une City à partir d'un CityDTO
+    /**
+     * Crée une nouvelle ville à partir d'un DTO.
+     */
     public CityDTO createCity(CityDTO cityDTO) {
         City city = toEntity(cityDTO);
         City saved = cityRepository.save(city);
         return toDTO(saved);
     }
 
-    // PUT: Met à jour une City à partir d'un CityDTO
+    /**
+     * Met à jour les informations d'une ville existante.
+     */
     public Optional<CityDTO> updateCity(Long id, CityDTO cityDTO) {
         return cityRepository.findById(id)
                 .map(city -> {
@@ -67,12 +87,16 @@ public class CityService {
                 });
     }
 
-    // DELETE: Supprime une City
+    /**
+     * Supprime une ville par son ID.
+     */
     public void deleteCity(Long id) {
         cityRepository.deleteById(id);
     }
 
-    // Conversion DTO → Entity
+    /**
+     * Convertit un CityDTO en entité City.
+     */
     private City toEntity(CityDTO dto) {
         City city = new City();
         city.setName(dto.getName());
@@ -83,7 +107,9 @@ public class CityService {
         return city;
     }
 
-    // Conversion Entity → DTO
+    /**
+     * Convertit une entité City en CityDTO.
+     */
     public CityDTO toDTO(City city) {
         return new CityDTO(city.getId(), city.getName(), city.getDescription(), city.getLatitude(), city.getLongitude(), city.getImageUrl());
     }

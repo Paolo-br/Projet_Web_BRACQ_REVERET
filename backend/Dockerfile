@@ -1,6 +1,6 @@
 # Dockerfile pour le Backend Spring Boot
 
-# Étape 1: Build avec Maven
+# Build avec Maven
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 

@@ -40,12 +40,21 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+
+    /**
+     * Enregistre un nouvel utilisateur dans l'application.
+     * Valide les données reçues et crée le compte utilisateur.
+     */
     @Valid
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserCreateDTO userCreateDTO) {
         return ResponseEntity.ok(authService.register(userCreateDTO));
     }
 
+    /**
+     * Authentifie un utilisateur avec son email et mot de passe.
+     * Génère et retourne un token JWT en cas de succès.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {

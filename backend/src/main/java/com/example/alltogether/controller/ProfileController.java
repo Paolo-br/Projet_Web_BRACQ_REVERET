@@ -18,6 +18,15 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contrôleur REST pour la gestion du profil utilisateur.
+ *
+ * Permet à un utilisateur authentifié de :
+ * - Consulter et modifier son profil
+ * - Gérer sa photo de profil
+ * - Lier des comptes sociaux
+ * - Gérer ses lieux favoris
+ */
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
@@ -33,7 +42,9 @@ public class ProfileController {
         this.favoriteService = favoriteService;
     }
 
-    // GET /api/profile/me
+    /**
+     * Récupère le profil de l'utilisateur actuellement authentifié.
+     */
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getMyProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -42,7 +53,9 @@ public class ProfileController {
         return dto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // PUT /api/profile/me
+    /**
+     * Met à jour le profil de l'utilisateur actuellement authentifié.
+     */
     @PutMapping("/me")
     public ResponseEntity<UserProfileDTO> updateMyProfile(@RequestBody UserUpdateDTO updateDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,7 +68,9 @@ public class ProfileController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // POST /api/profile/me/photo
+    /**
+     * Upload une photo de profil pour l'utilisateur actuellement authentifié.
+     */
     @PostMapping("/me/photo")
     public ResponseEntity<String> uploadMyPhoto(@RequestParam("file") MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -67,7 +82,9 @@ public class ProfileController {
         return ResponseEntity.ok(url);
     }
 
-    // DELETE /api/profile/me/photo
+    /**
+     * Supprime la photo de profil de l'utilisateur actuellement authentifié.
+     */
     @DeleteMapping("/me/photo")
     public ResponseEntity<Void> deleteMyPhoto() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -79,8 +96,9 @@ public class ProfileController {
         return ResponseEntity.noContent().build();
     }
 
-    // GET /api/profile/me/social/connect/{provider}
-    // Retourne une URL pour initier un OAuth (placeholder/simple builder)
+    /**
+     * Retourne une URL pour initier la connexion OAuth avec un fournisseur social.
+     */
     @GetMapping("/me/social/connect/{provider}")
     public ResponseEntity<Map<String,String>> getSocialConnectUrl(@PathVariable String provider) {
         // NOTE: implémentation simple. Remplacez par la génération d'URL OAuth réelle si nécessaire.
@@ -91,8 +109,10 @@ public class ProfileController {
         return ResponseEntity.ok(res);
     }
 
-    // POST /api/profile/me/social
-    // Body: { provider: "instagram", url: "https://..." }
+    /**
+     * Lie un compte de réseau social au profil de l'utilisateur.
+     * Body: { provider: "instagram", url: "https://..." }
+     */
     @PostMapping("/me/social")
     public ResponseEntity<Void> linkSocial(@RequestBody com.example.alltogether.dto.SocialLinkDTO payload) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -108,7 +128,9 @@ public class ProfileController {
         }
     }
 
-    // GET /api/profile/me/favorites
+    /**
+     * Récupère la liste des lieux favoris de l'utilisateur.
+     */
     @GetMapping("/me/favorites")
     public ResponseEntity<List<Place>> getMyFavorites() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -120,7 +142,9 @@ public class ProfileController {
         return ResponseEntity.ok(favs);
     }
 
-    // POST /api/profile/me/favorites/{placeId}
+    /**
+     * Ajoute un lieu aux favoris de l'utilisateur.
+     */
     @PostMapping("/me/favorites/{placeId}")
     public ResponseEntity<Void> addFavorite(@PathVariable Long placeId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -132,7 +156,9 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
-    // DELETE /api/profile/me/favorites/{placeId}
+    /**
+     * Retire un lieu des favoris de l'utilisateur.
+     */
     @DeleteMapping("/me/favorites/{placeId}")
     public ResponseEntity<Void> removeFavorite(@PathVariable Long placeId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

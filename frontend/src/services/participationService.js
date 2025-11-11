@@ -1,6 +1,9 @@
 import API_CONFIG, { getAuthHeaders } from '../config/apiConfig';
 
-// Fonction helper pour récupérer l'utilisateur depuis le profil si manquant
+/**
+ * Fonction helper pour récupérer les données utilisateur depuis le sessionStorage
+ * ou depuis l'API si elles sont manquantes.
+ */
 async function ensureUserData() {
   let userStr = sessionStorage.getItem('user');
   
@@ -46,9 +49,15 @@ async function ensureUserData() {
   }
 }
 
-// Service pour les participations
+/**
+ * Service pour la gestion des participations aux lieux.
+ * Permet de créer, annuler et consulter les participations.
+ */
 export const participationService = {
-  // "J'y vais aujourd'hui"
+  /**
+   * Crée une participation pour l'utilisateur connecté à un lieu.
+   * Optionnellement avec une heure spécifique.
+   */
   async participate(placeId, participationTime) {
     // Vérifier le token JWT
     const token = sessionStorage.getItem('jwt_token');
@@ -98,7 +107,9 @@ export const participationService = {
     return response.json();
   },
 
-  // Annuler sa participation
+  /**
+   * Annule une participation existante par son ID.
+   */
   async cancelParticipation(participationId) {
     const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.DELETE(participationId), {
       method: 'DELETE',
@@ -112,7 +123,10 @@ export const participationService = {
     }
   },
 
-  // Voir qui participe à un lieu aujourd'hui
+  /**
+   * Récupère toutes les participations pour un lieu donné,
+   * filtrées pour ne garder que celles d'aujourd'hui.
+   */
   async getParticipations(placeId) {
     const token = sessionStorage.getItem('jwt_token');
     const headers = {};
@@ -147,11 +161,13 @@ export const participationService = {
     const today = new Date().toISOString().split('T')[0];
     return allParticipations.filter(p => {
       const participationDate = new Date(p.participationDate).toISOString().split('T')[0];
-      return participationDate === today && p.status === 'INSCRIT';
+      return participationDate === today && (p.status === 'INSCRIT' || p.status === 'PRESENT');
     });
   },
   
-  // Obtenir les participations d'un utilisateur
+  /**
+   * Récupère toutes les participations d'un utilisateur spécifique.
+   */
   async getParticipationsByUser(userId) {
     const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.BY_USER(userId), {
       headers: {
@@ -166,7 +182,10 @@ export const participationService = {
     return response.json();
   },
 
-  // Vérifier si l'utilisateur participe déjà aujourd'hui à un lieu
+  /**
+   * Vérifie si un utilisateur participe déjà aujourd'hui à un lieu donné.
+   * Retourne la participation si elle existe, null sinon.
+   */
   async checkUserParticipationToday(userId, placeId) {
     try {
       const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.USER_PLACE_TODAY(userId, placeId), {

@@ -14,7 +14,15 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Contrôleur REST pour la gestion des participations.
+ *
+ * Permet aux utilisateurs de :
+ * - Créer des participations à des activités dans des lieux
+ * - Consulter leurs participations passées et futures
+ * - Modifier le statut de leurs participations
+ * - Supprimer des participations
+ */
 @RestController
 @RequestMapping("/api/participations")
 public class ParticipationController {
@@ -26,13 +34,17 @@ public class ParticipationController {
         this.participationService = participationService;
     }
 
-    // GET /api/participations
+    /**
+     * Récupère toutes les participations enregistrées.
+     */
     @GetMapping
     public List<ParticipationDTO> getAllParticipations() {
         return participationService.getAllParticipations();
     }
 
-    // GET /api/participations/{id}
+    /**
+     * Récupère une participation par son ID.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ParticipationDTO> getParticipationById(@PathVariable Long id) {
         return participationService.getParticipationById(id)
@@ -40,13 +52,17 @@ public class ParticipationController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // GET /api/participations/user/{userId}
+    /**
+     * Récupère toutes les participations d'un utilisateur.
+     */
     @GetMapping("/user/{userId}")
     public List<ParticipationDTO> getParticipationsByUserId(@PathVariable Long userId) {
         return participationService.getParticipationsByUserId(userId);
     }
 
-    // GET /api/participations/user/{userId}/date/{date}
+    /**
+     * Récupère les participations d'un utilisateur pour une date spécifique.
+     */
     @GetMapping("/user/{userId}/date/{date}")
     public List<ParticipationDTO> getParticipationsByUserIdAndDate(
             @PathVariable Long userId,
@@ -54,13 +70,18 @@ public class ParticipationController {
         return participationService.getParticipationsByUserIdAndDate(userId, date);
     }
 
-    // GET /api/participations/place/{placeId}
+    /**
+     * Récupère toutes les participations pour un lieu donné.
+     */
     @GetMapping("/place/{placeId}")
     public List<ParticipationDTO> getParticipationsByPlaceId(@PathVariable Long placeId) {
         return participationService.getParticipationsByPlaceId(placeId);
     }
 
-    // POST /api/participations
+    /**
+     * Crée une nouvelle participation pour un utilisateur à un lieu.
+     * Peut inclure une date et une heure de participation.
+     */
     @PostMapping
     public ResponseEntity<?> createParticipation(
             @RequestParam Long userId,
@@ -88,7 +109,9 @@ public class ParticipationController {
         }
     }
 
-    // PUT /api/participations/{id}/status
+    /**
+     * Met à jour le statut d'une participation existante.
+     */
     @PutMapping("/{id}/status")
     public ResponseEntity<ParticipationDTO> updateParticipationStatus(
             @PathVariable Long id,
@@ -98,7 +121,9 @@ public class ParticipationController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // GET /api/participations/check
+    /**
+     * Vérifie si un utilisateur peut participer à un lieu pour une date donnée.
+     */
     @GetMapping("/check")
     public ResponseEntity<Boolean> canUserParticipate(
             @RequestParam Long userId,
@@ -108,14 +133,18 @@ public class ParticipationController {
         return ResponseEntity.ok(canParticipate);
     }
 
-    // DELETE /api/participations/{id}
+    /**
+     * Supprime une participation par son ID.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteParticipation(@PathVariable Long id) {
         participationService.deleteParticipation(id);
         return ResponseEntity.noContent().build();
     }
 
-    // GET /api/participations/user/{userId}/place/{placeId}/today
+    /**
+     * Récupère la participation d'un utilisateur pour un lieu spécifique aujourd'hui.
+     */
     @GetMapping("/user/{userId}/place/{placeId}/today")
     public ResponseEntity<ParticipationDTO> getUserParticipationForPlaceToday(
             @PathVariable Long userId,

@@ -26,13 +26,19 @@ public class CityController {
         this.cityService = cityService;
     }
 
-    // GET /api/cities
+    /**
+     * Récupère la liste de toutes les villes.
+     */
     @GetMapping
     public List<CityDTO> getAllCities() {
         return cityService.getAllCities();
     }
 
-    // GET /api/cities/{id}
+    /**
+     * Récupère une ville par son ID ou son nom.
+     * Tente d'abord de parser l'identifiant comme un ID numérique,
+     * sinon effectue une recherche par nom.
+     */
     @GetMapping("/{identifier}")
     public ResponseEntity<CityDTO> getCityByIdOrName(@PathVariable String identifier) {
         // Essayer d'abord de parser comme un ID numérique
@@ -49,7 +55,9 @@ public class CityController {
         }
     }
 
-    // GET /api/cities/name/{name} - Recherche par nom exact
+    /**
+     * Recherche une ville par son nom exact.
+     */
     @GetMapping("/name/{name}")
     public ResponseEntity<CityDTO> getCityByName(@PathVariable String name) {
         return cityService.getCityByName(name)
@@ -57,19 +65,25 @@ public class CityController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // GET /api/cities/search?name=...
+    /**
+     * Recherche des villes dont le nom contient la chaîne fournie.
+     */
     @GetMapping("/search")
     public List<CityDTO> searchCitiesByName(@RequestParam String name) {
         return cityService.searchCitiesByName(name);
     }
 
-    // POST /api/cities
+    /**
+     * Crée une nouvelle ville.
+     */
     @PostMapping
     public CityDTO createCity(@RequestBody CityDTO cityDTO) {
         return cityService.createCity(cityDTO);
     }
 
-    // PUT /api/cities/{id}
+    /**
+     * Met à jour les informations d'une ville existante.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<CityDTO> updateCity(@PathVariable Long id, @RequestBody CityDTO cityDTO) {
         return cityService.updateCity(id, cityDTO)
@@ -77,7 +91,9 @@ public class CityController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // DELETE /api/cities/{id}
+    /**
+     * Supprime une ville par son ID.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
         cityService.deleteCity(id);

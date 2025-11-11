@@ -1,6 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import API_CONFIG from '../config/apiConfig';
 
+/**
+ * Composant d'affichage d'une carte de ville.
+ * Affiche une image, le nom et la description de la ville.
+ * Cliquable pour naviguer vers la page de détails de la ville.
+ */
 export function CityCard({ city }) {
   const imageUrl = city.imageUrl ? `${API_CONFIG.BACKEND_URL}${city.imageUrl}` : `${API_CONFIG.BACKEND_URL}/uploads/paris.jpg`;
   console.log('City:', city.name, 'imageUrl:', city.imageUrl, 'Full URL:', imageUrl);
@@ -67,9 +72,17 @@ export function CityCard({ city }) {
   );
 }
 
+/**
+ * Composant d'affichage d'une carte de lieu.
+ * Affiche une image, le nom, la catégorie et l'adresse du lieu.
+ * Cliquable pour naviguer vers la page de détails du lieu.
+ */
 export function PlaceCard({ place }) {
   const navigate = useNavigate();
   
+  /**
+   * Convertit une catégorie en label lisible.
+   */
   const getCategoryLabel = (category) => {
     const labels = {
       'BAR': 'Bar',
@@ -82,7 +95,9 @@ export function PlaceCard({ place }) {
     return labels[category] || category;
   };
 
-  // Récupérer la première photo (celle qui finit par _1)
+  /**
+   * Récupère la première photo du lieu (priorité à celle finissant par _1).
+   */
   const getFirstPhoto = () => {
     console.log('Place:', place.name);
     console.log('Place photos:', place.photos);

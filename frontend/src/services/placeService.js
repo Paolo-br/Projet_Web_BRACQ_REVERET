@@ -1,8 +1,13 @@
 import API_CONFIG, { getAuthHeaders } from '../config/apiConfig';
 
-// Service pour les lieux
+/**
+ * Service pour la gestion des lieux.
+ * Permet de récupérer et rechercher des lieux depuis l'API.
+ */
 export const placeService = {
-  // Récupérer tous les lieux
+  /**
+   * Récupère la liste de tous les lieux.
+   */
   async getAllPlaces() {
     const response = await fetch(API_CONFIG.ENDPOINTS.PLACES.GET_ALL);
 
@@ -13,7 +18,9 @@ export const placeService = {
     return response.json();
   },
 
-  // Récupérer un lieu par ID
+  /**
+   * Récupère un lieu spécifique par son ID.
+   */
   async getPlaceById(id) {
     const response = await fetch(API_CONFIG.ENDPOINTS.PLACES.GET_BY_ID(id));
 
@@ -24,7 +31,9 @@ export const placeService = {
     return response.json();
   },
 
-  // Récupérer les lieux d'une ville
+  /**
+   * Récupère tous les lieux d'une ville spécifique.
+   */
   async getPlacesByCity(cityId) {
     const response = await fetch(API_CONFIG.ENDPOINTS.PLACES.GET_BY_CITY(cityId));
 
@@ -35,7 +44,9 @@ export const placeService = {
     return response.json();
   },
 
-  // Rechercher des lieux avec filtres
+  /**
+   * Recherche des lieux avec filtres optionnels (catégorie et/ou ville).
+   */
   async searchPlaces(category = null, city = null) {
     const params = new URLSearchParams();
     if (category) params.append('category', category);

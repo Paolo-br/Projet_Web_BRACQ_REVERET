@@ -209,7 +209,8 @@ public class PlaceService {
         int participationCount = (int) participationRepository
                 .findByPlaceIdAndParticipationDate(place.getId(), today)
                 .stream()
-                .filter(p -> p.getStatus() == Participation.ParticipationStatus.INSCRIT)
+                .filter(p -> p.getStatus() == Participation.ParticipationStatus.INSCRIT 
+                          || p.getStatus() == Participation.ParticipationStatus.PRESENT)
                 .count();
 
         return new PlaceDTO(

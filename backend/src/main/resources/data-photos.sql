@@ -1,13 +1,4 @@
 -- =====================================
--- FICHIER 2 : PHOTOS DES LIEUX
--- =====================================
--- Ce fichier gère UNIQUEMENT les photos des lieux
--- Pour ajouter de nouvelles photos, il suffit de modifier ce fichier
---
--- IMPORTANT : Ce fichier utilise DELETE puis INSERT pour permettre
--- des modifications faciles sans conflit avec ON CONFLICT
-
--- =====================================
 -- NETTOYAGE : Supprimer toutes les photos existantes
 -- =====================================
 -- Cela permet de réexécuter ce script sans erreurs
@@ -178,7 +169,7 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/bours
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/bourse_2.jpg' FROM place WHERE name = 'Vieille Bourse';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/lebas_1.jpg' FROM place WHERE name = 'Parc Jean-Baptiste Lebas';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/lebas_2.jpg' FROM place WHERE name = 'Parc Jean-Baptiste Lebas';
--- =====================================
+
 
 -- =====================================
 -- NICE (city_id = 7)
@@ -212,8 +203,6 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/paill
 -- =====================================
 -- NANTES (city_id = 8)
 -- =====================================
--- TODO: Ajouter les photos de Nantes
--- Photos pour Nantes (city_id = 8)
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_nid_1.jpg' FROM place WHERE name = 'Le Nid';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_nid_2.jpg' FROM place WHERE name = 'Le Nid';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_lieu_unique_1.jpg' FROM place WHERE name = 'Le Lieu Unique';
@@ -241,8 +230,6 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/parc_
 -- =====================================
 -- MONTPELLIER (city_id = 9)
 -- =====================================
--- TODO: Ajouter les photos de Montpellier
--- Photos pour Montpellier (city_id = 9)
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/rockstore_1.jpg' FROM place WHERE name = 'Le Rockstore';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/rockstore_2.jpg' FROM place WHERE name = 'Le Rockstore';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/black_sheep_montpellier_1.jpg' FROM place WHERE name = 'Black Sheep ';
@@ -270,8 +257,6 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/jardi
 -- =====================================
 -- STRASBOURG (city_id = 10)
 -- =====================================
--- TODO: Ajouter les photos de Strasbourg
--- Photos pour Strasbourg (city_id = 10)
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_grincheux_1.jpg' FROM place WHERE name = 'Le Grincheux';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_grincheux_2.jpg' FROM place WHERE name = 'Le Grincheux';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/cafe_brant_1.jpg' FROM place WHERE name = 'Le Café Brant';
@@ -299,8 +284,6 @@ INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/parc_
 -- =====================================
 -- RENNES (city_id = 11)
 -- =====================================
--- TODO: Ajouter les photos de Rennes
--- Photos pour Rennes (city_id = 11)
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_banjo_1.jpg' FROM place WHERE name = 'Le Banjo';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/le_banjo_2.jpg' FROM place WHERE name = 'Le Banjo';
 INSERT INTO place_photos (place_id, photo_url) SELECT id, '/uploads/places/bistrot_de_la_cite_1.jpg' FROM place WHERE name = 'Le Bistrot de la Cité';

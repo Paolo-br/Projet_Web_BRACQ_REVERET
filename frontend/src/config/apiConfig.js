@@ -1,6 +1,13 @@
-// Détection automatique de l'URL du backend
-// En développement : utilise localhost
-// En production ou via réseau : utilise l'adresse actuelle
+/**
+ * Configuration de l'API et des endpoints du backend.
+ * Détecte automatiquement l'URL du backend selon l'environnement.
+ */
+
+/**
+ * Détermine l'URL du backend selon l'environnement d'exécution.
+ * En développement local : utilise localhost:8080
+ * En réseau ou production : utilise l'IP actuelle avec le port 8080
+ */
 const getBackendUrl = () => {
   // Si on accède via localhost, on utilise localhost pour le backend
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -13,6 +20,10 @@ const getBackendUrl = () => {
 const BACKEND_BASE_URL = getBackendUrl();
 const API_BASE_URL = `${BACKEND_BASE_URL}/api`;
 
+/**
+ * Configuration centralisée de tous les endpoints de l'API.
+ * Organise les URLs par domaine fonctionnel (auth, cities, places, etc.).
+ */
 const API_CONFIG = {
   BASE_URL: API_BASE_URL,
   BACKEND_URL: BACKEND_BASE_URL,
@@ -69,7 +80,10 @@ const API_CONFIG = {
   },
 };
 
-// Helper pour récupérer les headers d'authentification
+/**
+ * Helper pour générer les headers HTTP avec authentification.
+ * Ajoute automatiquement le token JWT s'il existe dans le sessionStorage.
+ */
 export const getAuthHeaders = () => {
   const token = sessionStorage.getItem('jwt_token');
   return {
