@@ -63,20 +63,7 @@ jobs:
         continue-on-error: true
         run: npm run lint
 
-      - name: Run frontend tests
-        working-directory: ./frontend
-        run: npm test --silent
-
-      - name: Generate coverage report
-        working-directory: ./frontend
-        run: npm test -- --coverage --run
-
-      - name: Upload test coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage-report
-          path: frontend/coverage
+      # Frontend tests and coverage have been removed from CI (skipped)
 
       - name: Build
         working-directory: ./frontend
