@@ -11,15 +11,15 @@ function Navbar() {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [_userRoles, _setUserRoles] = useState([]);
+  const [userRoles, setUserRoles] = useState([]);
 
   // Vérifier si l'utilisateur est connecté
   useEffect(() => {
     setIsAuthenticated(authService.isAuthenticated());
     if (authService.isAuthenticated()) {
       // Récupérer les rôles de l'utilisateur
-      const roles = authService.getUserRoles();
-      setUserRoles(roles);
+  const roles = authService.getUserRoles();
+  setUserRoles(roles || []);
       
       (async () => {
         try {
@@ -36,7 +36,7 @@ function Navbar() {
     }
   }, []);
 
-  const _handleLogout = () => {
+  const handleLogout = () => {
     authService.logout();
     setIsAuthenticated(false);
     navigate("/");
