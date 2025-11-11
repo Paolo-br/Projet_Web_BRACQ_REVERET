@@ -11,7 +11,7 @@ function Navbar() {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [userRoles, setUserRoles] = useState([]);
+  const [_userRoles, _setUserRoles] = useState([]);
 
   // Vérifier si l'utilisateur est connecté
   useEffect(() => {
@@ -36,7 +36,7 @@ function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const _handleLogout = () => {
     authService.logout();
     setIsAuthenticated(false);
     navigate("/");

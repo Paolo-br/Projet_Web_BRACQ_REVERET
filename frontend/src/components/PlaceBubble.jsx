@@ -98,7 +98,7 @@ export default function PlaceBubble({ place, hoverDelay = 200 }) {
           const count = typeof place.participationCount === 'number' ? place.participationCount : 0;
           const personsLabel = count > 1 ? 'personnes' : 'personne';
           const verb = count > 1 ? 'vont' : 'va';
-          const text = count === 0 ? 'Aucune personne disponible aujourd\'hui' : `👥 ${count} ${personsLabel} ${verb} aujourd\'hui`;
+          const text = count === 0 ? "Aucune personne disponible aujourd'hui" : `👥 ${count} ${personsLabel} ${verb} aujourd'hui`;
           return (
             <p style={{ margin: '10px 0', color: '#007bff', fontWeight: 'bold' }}>{text}</p>
           );
