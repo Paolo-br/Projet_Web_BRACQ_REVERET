@@ -1,0 +1,164 @@
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+/**
+ * Composant d'affichage d'une carte interactive avec Leaflet.
+ * Affiche les villes et/ou les lieux sur une carte OpenStreetMap.
+ * Permet de naviguer vers les pages de détails en cliquant sur les marqueurs.
+ */
+function MapView({ cities, places = [] }) {
+  const navigate = useNavigate();
+
+  /**
+   * Compte le nombre de lieux par ville.
+   */
+  const getPlaceCountByCity = (cityId) => {
+    return places.filter(place => place.cityId === cityId).length;
+  };
+
+  /**
+   * Calcule le centre de la carte basé sur la position moyenne des villes.
+   */
+  const getMapCenter = () => {
+    if (cities.length === 0) return [48.8566, 2.3522]; // Paris par défaut
+
+    const avgLat = cities.reduce((sum, city) => sum + city.latitude, 0) / cities.length;
+    const avgLng = cities.reduce((sum, city) => sum + city.longitude, 0) / cities.length;
+    
+    return [avgLat, avgLng];
+  };
+
+  /**
+   * Calcule le niveau de zoom initial basé sur la dispersion géographique des villes.
+   */
+  const getInitialZoom = () => {
+    if (cities.length === 0) return 6;
+    if (cities.length === 1) return 10;
+
+    const lats = cities.map(c => c.latitude);
+    const lngs = cities.map(c => c.longitude);
+    const latRange = Math.max(...lats) - Math.min(...lats);
+    const lngRange = Math.max(...lngs) - Math.min(...lngs);
+    const maxRange = Math.max(latRange, lngRange);
+
+    if (maxRange < 1) return 10;
+    if (maxRange < 5) return 7;
+    if (maxRange < 10) return 6;
+    if (maxRange < 20) return 5;
+    return 4;
+  };
+
+  /**
+   * Gère le clic sur un marqueur de ville pour naviguer vers sa page.
+   */
+  const handleMarkerClick = (cityName) => {
+    navigate(`/city/${encodeURIComponent(cityName)}`);
+  };
+
+  return (
+    <div style={{ 
+      width: "100%", 
+      height: "500px", 
+      borderRadius: "12px", 
+      overflow: "hidden",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+    }}>
+      <MapContainer
+        center={getMapCenter()}
+        zoom={getInitialZoom()}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        {cities.map((city) => {
+          const placeCount = getPlaceCountByCity(city.id);
+          
+          return (
+            <Marker
+              key={city.id}
+              position={[city.latitude, city.longitude]}
+              eventHandlers={{
+                click: () => handleMarkerClick(city.name)
+              }}
+            >
+              <Tooltip 
+                direction="top" 
+                offset={[0, -40]}
+                opacity={0.9}
+                permanent={false}
+              >
+                <div style={{ 
+                  textAlign: 'center',
+                  padding: '2px 4px',
+                  minWidth: '120px'
+                }}>
+                  <strong style={{ 
+                    fontSize: '0.95rem',
+                    display: 'block',
+                    marginBottom: '2px'
+                  }}>
+                    {city.name}
+                  </strong>
+                  <span style={{ 
+                    fontSize: '0.85rem',
+                    color: '#555'
+                  }}>
+                    {placeCount} {placeCount <= 1 ? 'lieu' : 'lieux'}
+                  </span>
+                </div>
+              </Tooltip>
+              
+              <Popup>
+                <div style={{ textAlign: 'center' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>{city.name}</h3>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#666' }}>
+                    {city.description || `Découvrez ${city.name} !`}
+                  </p>
+                  <button
+                    onClick={() => handleMarkerClick(city.name)}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                  >
+                    Voir la ville
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  );
+}
+
+export default MapView;

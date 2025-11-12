@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:15
+    container_name: alltogether-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: BaseD@ta2025
+      POSTGRES_DB: alltogether
+    ports:
+      - "5433:5432"  # Port 5433 sur l'hôte pour éviter conflit avec PostgreSQL local
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: alltogether-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/alltogether  # Reste 5432 car c'est DANS le réseau Docker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: BaseD@ta2025
+      SPRING_PROFILES_ACTIVE: prod
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+    container_name: alltogether-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    stdin_open: true
+    tty: true
+
+volumes:
+  pgdata:
