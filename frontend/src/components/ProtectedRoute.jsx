@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import authService from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Composant de protection de route pour les pages nécessitant une authentification
@@ -8,8 +8,7 @@ import authService from '../services/authService';
  * @param {boolean} [props.requireAdmin=false] - Si true, nécessite le rôle ADMIN
  */
 function ProtectedRoute({ children, requireAdmin = false }) {
-  const isAuthenticated = authService.isAuthenticated();
-  const isAdmin = authService.isAdmin();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
   if (!isAuthenticated) {

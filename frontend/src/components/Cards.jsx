@@ -2,12 +2,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import API_CONFIG from '../config/apiConfig';
 
 /**
+ * Utilitaire pour construire l'URL complète d'une image.
+ * Si l'URL commence par http:// ou https://, elle est retournée telle quelle.
+ * Sinon, elle est préfixée par BACKEND_URL.
+ */
+const getImageUrl = (imageUrl, fallback = '/uploads/paris.jpg') => {
+  if (!imageUrl) {
+    return `${API_CONFIG.BACKEND_URL}${fallback}`;
+  }
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  return `${API_CONFIG.BACKEND_URL}${imageUrl}`;
+};
+
+/**
  * Composant d'affichage d'une carte de ville.
  * Affiche une image, le nom et la description de la ville.
  * Cliquable pour naviguer vers la page de détails de la ville.
  */
 export function CityCard({ city }) {
-  const imageUrl = city.imageUrl ? `${API_CONFIG.BACKEND_URL}${city.imageUrl}` : `${API_CONFIG.BACKEND_URL}/uploads/paris.jpg`;
+  const imageUrl = getImageUrl(city.imageUrl);
   console.log('City:', city.name, 'imageUrl:', city.imageUrl, 'Full URL:', imageUrl);
   
   return (

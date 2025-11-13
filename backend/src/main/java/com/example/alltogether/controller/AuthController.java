@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,6 +81,45 @@ public class AuthController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Utilisateur non trouvé");
             return ResponseEntity.status(401).body(errorResponse);
+        }
+    }
+
+    /**
+     * Rafraîchit le token JWT pour obtenir les rôles mis à jour.
+     * Permet à un utilisateur promu ADMIN d'obtenir un nouveau token avec le rôle à jour.
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Token manquant ou invalide");
+                return ResponseEntity.status(401).body(errorResponse);
+            }
+
+            String oldToken = authHeader.substring(7);
+            String username = jwtTokenProvider.extractUsername(oldToken);
+            
+            if (username == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Token invalide");
+                return ResponseEntity.status(401).body(errorResponse);
+            }
+
+            // Charger les informations utilisateur à jour depuis la base de données
+            UserDetails userDetails = authService.loadUserByUsername(username);
+            
+            // Générer un nouveau token avec les rôles à jour
+            String newToken = jwtTokenProvider.generateToken(userDetails);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("token", newToken);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Erreur lors du rafraîchissement du token");
+            return ResponseEntity.status(500).body(errorResponse);
         }
     }
 

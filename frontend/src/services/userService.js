@@ -36,7 +36,7 @@ const userService = {
    * Upload une photo de profil pour l'utilisateur connecté.
    */
   async uploadMyPhoto(file) {
-    const token = sessionStorage.getItem('jwt_token');
+    const token = localStorage.getItem('jwt_token');
     const form = new FormData();
     form.append('file', file);
     const res = await fetch(API_CONFIG.ENDPOINTS.USER.UPLOAD_MY_PHOTO, {
@@ -101,6 +101,69 @@ const userService = {
       throw new Error(txt || 'Erreur lors du lien du profil social');
     }
     return;
+  },
+
+  /**
+   * Crée un nouvel utilisateur (admin uniquement).
+   */
+  async createUser(userData) {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Erreur lors de la création de l\'utilisateur');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Met à jour un utilisateur existant (admin uniquement).
+   */
+  async updateUser(userId, userData) {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/users/${userId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Erreur lors de la mise à jour de l\'utilisateur');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Supprime un utilisateur (admin uniquement).
+   */
+  async deleteUser(userId) {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/users/${userId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Erreur lors de la suppression de l\'utilisateur');
+    }
+    return await res.text();
+  },
+
+  /**
+   * Change le mot de passe d'un utilisateur (admin uniquement).
+   */
+  async changeUserPassword(userId, newPassword) {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/users/${userId}/password`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ newPassword }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || 'Erreur lors du changement de mot de passe');
+    }
+    return await res.text();
   },
 };
 

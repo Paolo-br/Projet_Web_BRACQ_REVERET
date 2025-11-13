@@ -32,6 +32,7 @@ const API_CONFIG = {
       REGISTER: `${API_BASE_URL}/auth/register`,
       LOGIN: `${API_BASE_URL}/auth/login`,
       LOGOUT: `${API_BASE_URL}/auth/logout`,
+      REFRESH: `${API_BASE_URL}/auth/refresh`,
     },
     CITIES: {
       ALL: `${API_BASE_URL}/cities`,
@@ -85,7 +86,7 @@ const API_CONFIG = {
  * Ajoute automatiquement le token JWT s'il existe dans le sessionStorage.
  */
 export const getAuthHeaders = () => {
-  const token = sessionStorage.getItem('jwt_token');
+  const token = localStorage.getItem('jwt_token');
   return {
     'Content-Type': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` }),

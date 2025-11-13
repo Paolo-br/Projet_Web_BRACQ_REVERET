@@ -13,32 +13,35 @@ import UserProfileView from "./pages/UserProfileView";
 import AdminPanel from "./pages/AdminPanel";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ParticipationProvider } from "./contexts/ParticipationContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   return (
     <BrowserRouter>
-      <ParticipationProvider>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/city/:cityName" element={<CityPage />} />
-          <Route path="/place/:placeId" element={<PlacePage />} />
-          <Route path="/activities" element={<Activities />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/user/:userId" element={<UserProfileView />} />
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminPanel />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
-        <Footer />
-      </ParticipationProvider>
+      <AuthProvider>
+        <ParticipationProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/city/:cityName" element={<CityPage />} />
+            <Route path="/place/:placeId" element={<PlacePage />} />
+            <Route path="/activities" element={<Activities />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:userId" element={<UserProfileView />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminPanel />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+          <Footer />
+        </ParticipationProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -4,11 +4,13 @@ import com.example.alltogether.dto.*;
 import com.example.alltogether.exception.EmailAlreadyExistsException;
 import com.example.alltogether.model.UserProfile;
 import com.example.alltogether.repository.UserProfileRepository;
+import com.example.alltogether.repository.FavoriteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +20,13 @@ import java.util.stream.Collectors;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+    private final FavoriteRepository favoriteRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserProfileService(UserProfileRepository userProfileRepository) {
+    public UserProfileService(UserProfileRepository userProfileRepository, FavoriteRepository favoriteRepository) {
         this.userProfileRepository = userProfileRepository;
+        this.favoriteRepository = favoriteRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -121,8 +125,17 @@ public class UserProfileService {
     // ========================
     // SUPPRESSION
     // ========================
+    @Transactional
     public void deleteUser(Long id) {
-        userProfileRepository.deleteById(id);
+        // Vérifier que l'utilisateur existe
+        UserProfile user = userProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id: " + id));
+        
+        // Supprimer tous les favoris de l'utilisateur
+        favoriteRepository.deleteByUserId(id);
+        
+        // Supprimer l'utilisateur (les participations seront supprimées automatiquement via cascade)
+        userProfileRepository.delete(user);
     }
 
     // ========================

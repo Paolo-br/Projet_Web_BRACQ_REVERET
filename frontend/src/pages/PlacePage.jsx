@@ -7,6 +7,7 @@ import API_CONFIG from '../config/apiConfig';
 import { placeService } from '../services/placeService';
 import { participationService } from '../services/participationService';
 import { useParticipation } from '../contexts/ParticipationContext';
+import { useAuth } from '../contexts/AuthContext';
 import favoriteService from '../services/favoriteService';
 
 // Configuration de l'icône Leaflet
@@ -28,6 +29,7 @@ function PlacePage() {
   const { placeId } = useParams();
   const navigate = useNavigate();
   const { participationTrigger, notifyParticipationChange } = useParticipation();
+  const { isAuthenticated, currentUser } = useAuth();
   
   const [place, setPlace] = useState(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -43,20 +45,11 @@ function PlacePage() {
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const isLoggedIn = () => {
-    return sessionStorage.getItem('jwt_token') !== null;
+    return isAuthenticated;
   };
 
   const getCurrentUserId = () => {
-    const userStr = sessionStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        return user.id;
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
+    return currentUser?.id || null;
   };
 
   useEffect(() => {
@@ -611,9 +604,7 @@ function PlacePage() {
                   >
                     {participant.userProfilePictureUrl ? (
                       <img
-                        src={participant.userProfilePictureUrl.startsWith('http') 
-                          ? participant.userProfilePictureUrl 
-                          : `${API_CONFIG.BACKEND_URL}${participant.userProfilePictureUrl}`}
+                        src={participant.userProfilePictureUrl.startsWith('/') ? `${API_CONFIG.BACKEND_URL}${participant.userProfilePictureUrl}` : `${API_CONFIG.BACKEND_URL}/${participant.userProfilePictureUrl}`}
                         alt={`${participant.userFirstName} ${participant.userLastName}`}
                         style={{
                           width: '48px',

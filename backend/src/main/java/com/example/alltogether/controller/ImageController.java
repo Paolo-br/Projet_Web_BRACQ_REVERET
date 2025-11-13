@@ -51,6 +51,15 @@ public class ImageController {
     }
 
     /**
+     * Upload d'une seule image pour un lieu (place).
+     * Cette route accepte également un tableau de fichiers pour compatibilité.
+     */
+    @PostMapping("/places/{placeId}")
+    public ResponseEntity<List<String>> uploadPlaceImagesAlternative(@PathVariable Long placeId, @RequestParam("files") List<MultipartFile> files) {
+        return ResponseEntity.ok(imageService.uploadPlacePhotos(files, placeId));
+    }
+
+    /**
      * Suppression d'une image spécifique d'un lieu.
      */
     @DeleteMapping("/place/{placeId}")

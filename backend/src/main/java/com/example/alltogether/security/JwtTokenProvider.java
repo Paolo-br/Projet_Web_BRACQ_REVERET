@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -28,7 +29,17 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Méthode générique pour extraire n’importe quelle info (claim) du token
+    // Extraire les rôles du token JWT
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        Object rolesObj = claims.get("roles");
+        if (rolesObj instanceof List) {
+            return (List<String>) rolesObj;
+        }
+        return new java.util.ArrayList<>();
+    }
+
+    // Méthode générique pour extraire n'importe quelle info (claim) du token
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -40,6 +51,12 @@ public class JwtTokenProvider {
 
     // Génère un token JWT avec des informations supplémentaires (extraClaims)
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        // Ajouter les rôles dans les claims du JWT
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(java.util.stream.Collectors.toList());
+        extraClaims.put("roles", roles);
+        
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())

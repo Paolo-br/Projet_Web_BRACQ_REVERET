@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Logo from "../assets/Logo.png";
-import authService from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 import userService from "../services/userService";
 import API_CONFIG from "../config/apiConfig";
 import RoleBadge from "./RoleBadge";
@@ -9,18 +9,12 @@ import RoleBadge from "./RoleBadge";
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [userRoles, setUserRoles] = useState([]);
 
-  // Vérifier si l'utilisateur est connecté
+  // Charger la photo de profil quand l'utilisateur est connecté
   useEffect(() => {
-    setIsAuthenticated(authService.isAuthenticated());
-    if (authService.isAuthenticated()) {
-      // Récupérer les rôles de l'utilisateur
-  const roles = authService.getUserRoles();
-  setUserRoles(roles || []);
-      
+    if (isAuthenticated) {
       (async () => {
         try {
           const profile = await userService.getMyProfile();
@@ -33,12 +27,13 @@ function Navbar() {
           console.debug('Navbar: impossible de charger la photo de profil', e);
         }
       })();
+    } else {
+      setProfilePhoto(null);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
-    authService.logout();
-    setIsAuthenticated(false);
+    logout();
     navigate("/");
   };
 
@@ -177,7 +172,7 @@ function Navbar() {
           // Utilisateur connecté : afficher le bouton profil et les rôles
           <>
             {/* Badge admin si l'utilisateur est admin */}
-            {authService.isAdmin() && (
+            {isAdmin && (
               <Link 
                 to="/admin"
                 style={{ textDecoration: "none" }}

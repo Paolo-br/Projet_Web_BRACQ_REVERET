@@ -1,11 +1,11 @@
 import API_CONFIG, { getAuthHeaders } from '../config/apiConfig';
 
 /**
- * Fonction helper pour récupérer les données utilisateur depuis le sessionStorage
+ * Fonction helper pour récupérer les données utilisateur depuis le localStorage
  * ou depuis l'API si elles sont manquantes.
  */
 async function ensureUserData() {
-  let userStr = sessionStorage.getItem('user');
+  let userStr = localStorage.getItem('user');
   
   // Si l'objet user existe déjà, le retourner
   if (userStr) {
@@ -20,7 +20,7 @@ async function ensureUserData() {
   }
   
   // Si pas d'objet user ou invalide, tenter de le récupérer depuis l'API
-  const token = sessionStorage.getItem('jwt_token');
+  const token = localStorage.getItem('jwt_token');
   if (!token) {
     throw new Error('Vous devez être connecté pour participer (token manquant)');
   }
@@ -40,7 +40,7 @@ async function ensureUserData() {
     const user = await response.json();
     
     // Stocker pour les prochaines fois
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
     
     return user;
   } catch (e) {
@@ -60,7 +60,7 @@ export const participationService = {
    */
   async participate(placeId, participationTime) {
     // Vérifier le token JWT
-    const token = sessionStorage.getItem('jwt_token');
+    const token = localStorage.getItem('jwt_token');
     
     if (!token) {
       throw new Error('Vous devez être connecté pour participer (token manquant)');
@@ -114,7 +114,7 @@ export const participationService = {
     const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.DELETE(participationId), {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${sessionStorage.getItem('jwt_token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
       },
     });
 
@@ -128,7 +128,7 @@ export const participationService = {
    * filtrées pour ne garder que celles d'aujourd'hui.
    */
   async getParticipations(placeId) {
-    const token = sessionStorage.getItem('jwt_token');
+    const token = localStorage.getItem('jwt_token');
     const headers = {};
     
     // Ajouter le token seulement s'il existe (endpoint peut être public ou nécessiter auth)
@@ -171,7 +171,7 @@ export const participationService = {
   async getParticipationsByUser(userId) {
     const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.BY_USER(userId), {
       headers: {
-        'Authorization': `Bearer ${sessionStorage.getItem('jwt_token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
       },
     });
 
@@ -190,7 +190,7 @@ export const participationService = {
     try {
       const response = await fetch(API_CONFIG.ENDPOINTS.PARTICIPATIONS.USER_PLACE_TODAY(userId, placeId), {
         headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('jwt_token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
         },
       });
 

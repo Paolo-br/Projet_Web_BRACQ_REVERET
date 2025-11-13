@@ -72,8 +72,12 @@ public class UserProfileController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userProfileService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        try {
+            userProfileService.deleteUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
