@@ -2,7 +2,7 @@
 
 Application web collaborative permettant aux étudiants Erasmus de découvrir, partager et organiser des activités dans différentes villes françaises.
 
-**Auteurs :** BRACQ Paolo & REVERET  
+**Auteurs :** BRACQ Paolo & REVERET Pablo
 **Formation :** Master Informatique - Polytech Paris-Saclay  
 **Année :** 2024-2025
 
