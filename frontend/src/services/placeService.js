@@ -61,6 +61,80 @@ export const placeService = {
 
     return response.json();
   },
+
+  /**
+   * Crée un nouveau lieu (admin uniquement).
+   */
+  async createPlace(placeData) {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/places`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(placeData),
+    });
+
+    if (!response.ok) {
+      const txt = await response.text();
+      throw new Error(txt || 'Erreur lors de la création du lieu');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Met à jour un lieu existant (admin uniquement).
+   */
+  async updatePlace(placeId, placeData) {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/places/${placeId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(placeData),
+    });
+
+    if (!response.ok) {
+      const txt = await response.text();
+      throw new Error(txt || 'Erreur lors de la mise à jour du lieu');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Supprime un lieu (admin uniquement).
+   */
+  async deletePlace(placeId) {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/places/${placeId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const txt = await response.text();
+      throw new Error(txt || 'Erreur lors de la suppression du lieu');
+    }
+
+    return response.text();
+  },
+
+  /**
+   * Upload une photo pour un lieu (admin uniquement).
+   */
+  async uploadPlacePhoto(placeId, file) {
+    const token = localStorage.getItem('jwt_token');
+    const form = new FormData();
+    form.append('files', file);
+    const response = await fetch(`${API_CONFIG.BASE_URL}/images/place/${placeId}`, {
+      method: 'POST',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      body: form,
+    });
+
+    if (!response.ok) {
+      const txt = await response.text();
+      throw new Error(txt || 'Erreur lors de l\'upload de la photo');
+    }
+
+    return response.json();
+  },
 };
 
 export default placeService;

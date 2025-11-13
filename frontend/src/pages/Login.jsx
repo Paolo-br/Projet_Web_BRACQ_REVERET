@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -23,10 +24,10 @@ function Login() {
     setError("");
 
     try {
-      await authService.login(formData.email, formData.password);
+      await login(formData.email, formData.password);
       
-      // Succès : recharger la page pour mettre à jour la navbar, puis rediriger
-      window.location.href = "/";
+      // Succès : rediriger vers la page d'accueil
+      navigate("/");
     } catch (err) {
       setError(err.message || "Erreur lors de la connexion. Veuillez réessayer.");
       console.error("Erreur de connexion:", err);

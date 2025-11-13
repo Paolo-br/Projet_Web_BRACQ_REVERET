@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import authService from "../services/authService";
 import userService from "../services/userService";
 import InstaIcon from "../assets/insta.png";
@@ -13,6 +14,7 @@ import RoleBadge from "../components/RoleBadge";
 
 function Profile() {
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
   const { participationTrigger, notifyParticipationChange } = useParticipation();
   const [userEmail, setUserEmail] = useState("");
   const [profile, setProfile] = useState(null);
@@ -41,7 +43,7 @@ function Profile() {
 
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté
-    if (!authService.isAuthenticated()) {
+    if (!isAuthenticated) {
       navigate("/login");
       return;
     }
@@ -105,10 +107,8 @@ function Profile() {
   }, [participationTrigger, profile?.id]);
 
   const handleLogout = () => {
-    authService.logout();
+    logout();
     navigate("/");
-    // Recharger pour mettre à jour la navbar
-    window.location.reload();
   };
 
   const handleEdit = () => {

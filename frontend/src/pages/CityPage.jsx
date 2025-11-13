@@ -5,6 +5,21 @@ import API_CONFIG from "../config/apiConfig";
 import QuickFilters from "../components/QuickFilters";
 import PlaceBubble from "../components/PlaceBubble";
 
+/**
+ * Utilitaire pour construire l'URL complète d'une image.
+ * Si l'URL commence par http:// ou https://, elle est retournée telle quelle.
+ * Sinon, elle est préfixée par BACKEND_URL.
+ */
+const getImageUrl = (imageUrl, fallback = '/uploads/paris.jpg') => {
+  if (!imageUrl) {
+    return `${API_CONFIG.BACKEND_URL}${fallback}`;
+  }
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  return `${API_CONFIG.BACKEND_URL}${imageUrl}`;
+};
+
 function CityPage() {
   const { cityName } = useParams();
   const [city, setCity] = useState(null);
@@ -129,7 +144,7 @@ function CityPage() {
         }}
       >
         <img
-          src={city.imageUrl ? `${API_CONFIG.BACKEND_URL}${city.imageUrl}` : `${API_CONFIG.BACKEND_URL}/uploads/paris.jpg`}
+          src={getImageUrl(city.imageUrl)}
           alt={city.name}
           style={{
             width: "100%",
